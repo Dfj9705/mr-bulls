@@ -23,6 +23,23 @@ class Address extends Model
         'is_default' => 'boolean',
     ];
 
+    protected static function booted(): void
+    {
+        static::saved(function (Address $address) {
+            if (!$address->is_default) {
+                return;
+            }
+
+            static::query()
+                ->where('user_id', $address->user_id)
+                ->whereKeyNot($address->id)
+                ->where('is_default', true)
+                ->update([
+                    'is_default' => false,
+                ]);
+        });
+    }
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
