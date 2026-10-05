@@ -11,8 +11,11 @@
     </title>
 
     @vite([
+        'resources/assets/css/demo.css',
+        'resources/assets/vendor/fonts/iconify/iconify.css',
+        'resources/scss/app.scss',
         'resources/css/shop/app.css',
-        'resources/js/shop/app.js'
+        'resources/js/shop/app.js',
     ])
 
     @livewireStyles
@@ -22,10 +25,19 @@
 
 <body>
 
-    @yield('content')
+    <div class="d-flex flex-column min-vh-100">
+
+        <x-shop.navbar />
+
+        <main class="flex-grow-1">
+            @yield('content')
+        </main>
+
+        <x-shop.footer />
+
+    </div>
 
     @livewireScripts
-
     @stack('scripts')
 
 </body>

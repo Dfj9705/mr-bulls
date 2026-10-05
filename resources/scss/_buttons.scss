@@ -1,0 +1,40 @@
+@use "sass:color";
+@use 'variables' as *;
+
+.btn-church {
+    background: $church-primary;
+    border-color: $church-primary;
+    color: white;
+
+    &:hover {
+        background: color.adjust($church-primary, $lightness: -10%);
+        border-color: color.adjust($church-primary, $lightness: -10%);
+        color: white;
+    }
+}
+
+.btn-primary {
+    background: $church-primary;
+    border-color: $church-primary;
+    color: white;
+    box-shadow: 0 4px 6px -1px rgb(var(--church-primary-rgb) / 0.1), 0 2px 4px -2px rgb(var(--church-primary-rgb) / 0.1);
+
+
+    &:hover {
+        background: color.adjust($church-primary, $lightness: -10%);
+        border-color: color.adjust($church-primary, $lightness: -10%);
+        color: white;
+    }
+}
+
+.btn-secondary {
+    background: $church-secondary;
+    border-color: $church-secondary;
+    color: white;
+
+    &:hover {
+        background: color.adjust($church-secondary, $lightness: -10%);
+        border-color: color.adjust($church-secondary, $lightness: -10%);
+        color: white;
+    }
+}

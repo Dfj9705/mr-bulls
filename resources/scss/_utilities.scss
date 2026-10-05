@@ -1,0 +1,17 @@
+@use 'variables' as *;
+
+.bg-church-primary {
+    background-color: $church-primary;
+}
+
+.text-church-primary {
+    color: $church-primary;
+}
+
+.bg-church-secondary {
+    background-color: $church-secondary;
+}
+
+.text-church-secondary {
+    color: $church-secondary;
+}

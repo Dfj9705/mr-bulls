@@ -1,0 +1,23 @@
+@use 'variables' as *;
+
+.gallery-grid {
+    margin: 0 auto;
+}
+
+.gallery-item {
+    width: 33.333%;
+    padding: 8px;
+}
+
+.gallery-item img {
+    width: 100%;
+    border-radius: 12px;
+    display: block;
+    object-fit: cover;
+    box-shadow: 0 0.125rem 0.375rem rgba(67, 89, 113, .12);
+    transition: transform .2s ease;
+}
+
+.gallery-item img:hover {
+    transform: scale(1.02);
+}
