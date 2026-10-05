@@ -41,3 +41,6 @@ Route::get('/productos/{product:slug}', function (Product $product) {
     return view('shop.products.show', compact('product'));
 
 })->name('products.show');
+
+Route::view('/carrito', 'shop.cart.index')
+    ->name('cart.index');

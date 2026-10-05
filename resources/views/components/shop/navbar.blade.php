@@ -34,23 +34,7 @@
             </button>
 
             {{-- Carrito --}}
-            <button
-                type="button"
-                class="btn btn-primary position-relative"
-            >
-                <i class="bx bx-cart"></i>
-
-                <span class="ms-1 d-none d-lg-inline">
-                    Carrito
-                </span>
-
-                <span
-                    class="position-absolute top-0 start-100
-                           translate-middle badge rounded-pill bg-danger"
-                >
-                    0
-                </span>
-            </button>
+            <livewire:shop.cart-counter />
 
         </div>
     </div>

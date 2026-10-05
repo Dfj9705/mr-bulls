@@ -119,3 +119,21 @@ body {
 .product-description {
     line-height: 1.8;
 }
+
+.cart-product-image {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+}
+
+.cart-product-placeholder {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    background: #f1f1f4;
+    border-radius: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #a1acb8;
+    font-size: 2rem;
+}

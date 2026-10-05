@@ -205,63 +205,7 @@
                     {{-- CANTIDAD --}}
                     @if($product->stock > 0)
 
-                        <div class="mb-4">
-
-                            <label
-                                for="quantity"
-                                class="form-label fw-semibold"
-                            >
-                                Cantidad
-                            </label>
-
-                            <div
-                                class="input-group"
-                                style="max-width: 150px;"
-                            >
-
-                                <button
-                                    type="button"
-                                    class="btn btn-outline-secondary"
-                                    id="decreaseQuantity"
-                                >
-                                    −
-                                </button>
-
-                                <input
-                                    type="number"
-                                    id="quantity"
-                                    class="form-control text-center"
-                                    value="1"
-                                    min="1"
-                                    max="{{ $product->stock }}"
-                                >
-
-                                <button
-                                    type="button"
-                                    class="btn btn-outline-secondary"
-                                    id="increaseQuantity"
-                                >
-                                    +
-                                </button>
-
-                            </div>
-
-                        </div>
-
-
-                        <button
-                            type="button"
-                            class="btn btn-primary btn-lg w-100"
-                            disabled
-                        >
-                            <i class="bx bx-cart me-2"></i>
-
-                            Agregar al carrito
-                        </button>
-
-                        <small class="d-block text-muted text-center mt-2">
-                            El carrito estará disponible próximamente.
-                        </small>
+                        <livewire:shop.add-to-cart :product="$product" />
 
                     @else
 
