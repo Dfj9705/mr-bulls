@@ -44,3 +44,6 @@ Route::get('/productos/{product:slug}', function (Product $product) {
 
 Route::view('/carrito', 'shop.cart.index')
     ->name('cart.index');
+
+Route::view('/checkout', 'shop.checkout.index')
+    ->name('checkout.index');

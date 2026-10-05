@@ -281,13 +281,12 @@
                                 </div>
 
 
-                                <button
-                                    type="button"
+                                <a
+                                    href="{{ route('checkout.index') }}"
                                     class="btn btn-primary btn-lg w-100"
-                                    disabled
                                 >
                                     Continuar compra
-                                </button>
+                                </a>
 
                                 <small class="d-block text-muted text-center mt-2">
                                     El envío se calculará durante el checkout.

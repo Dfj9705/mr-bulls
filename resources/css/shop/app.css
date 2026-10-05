@@ -137,3 +137,25 @@ body {
     color: #a1acb8;
     font-size: 2rem;
 }
+
+.checkout-address-card {
+    min-height: 150px;
+    padding: 1rem;
+    border: 2px solid #e6e7eb;
+    border-radius: 0.75rem;
+    background: #fff;
+    transition:
+        border-color 0.2s ease,
+        background-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.checkout-address-card:hover {
+    border-color: rgba(var(--bs-primary-rgb), 0.5);
+}
+
+.checkout-address-card.active {
+    border-color: var(--bs-primary);
+    background: rgba(var(--bs-primary-rgb), 0.04);
+    box-shadow: 0 0 0 1px var(--bs-primary);
+}
