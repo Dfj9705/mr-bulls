@@ -43,6 +43,9 @@ class Order extends Model
 
         'customer_notes',
         'admin_notes',
+
+        'shipping_recipient',
+        'shipping_phone',
     ];
 
     protected $casts = [

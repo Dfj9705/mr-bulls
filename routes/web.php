@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\Shop\AuthController;
 use App\Models\Category;
+use App\Models\Order;
 use App\Models\Product;
 use Illuminate\Support\Facades\Route;
 
@@ -47,3 +49,37 @@ Route::view('/carrito', 'shop.cart.index')
 
 Route::view('/checkout', 'shop.checkout.index')
     ->name('checkout.index');
+
+
+Route::middleware('guest')->group(function () {
+
+    Route::get('/login', [AuthController::class, 'showLogin'])
+        ->name('login');
+
+    Route::post('/login', [AuthController::class, 'login'])
+        ->name('login.store');
+
+    Route::get('/registro', [AuthController::class, 'showRegister'])
+        ->name('register');
+
+    Route::post('/registro', [AuthController::class, 'register'])
+        ->name('register.store');
+
+});
+
+Route::post('/logout', [AuthController::class, 'logout'])
+    ->middleware('auth')
+    ->name('logout');
+
+Route::get('/pedido/{order}/confirmado', function (string $order) {
+
+    $order = Order::query()
+        ->where('order_number', $order)
+        ->firstOrFail();
+
+    return view(
+        'shop.orders.success',
+        compact('order')
+    );
+
+})->name('orders.success');
