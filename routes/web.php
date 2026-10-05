@@ -25,3 +25,19 @@ Route::get('/', function () {
         'featuredProducts'
     ));
 })->name('home');
+
+Route::view('/productos', 'shop.products.index')
+    ->name('products.index');
+
+Route::get('/productos/{product:slug}', function (Product $product) {
+
+    abort_unless($product->is_active, 404);
+
+    $product->load([
+        'category',
+        'images',
+    ]);
+
+    return view('shop.products.show', compact('product'));
+
+})->name('products.show');

@@ -65,7 +65,7 @@
                     Inicio
                 </a>
 
-                <a href="#"
+                <a href="{{ route('products.index') }}"
                    class="text-decoration-none text-body">
                     Productos
                 </a>

@@ -194,8 +194,15 @@
                                         {{ $product->category->name }}
                                     </small>
 
-                                    <h5 class="card-title mt-1 mb-2">
-                                        {{ $product->name }}
+                                   <h5 class="card-title mt-1 mb-2">
+
+                                        <a
+                                            href="{{ route('products.show', $product) }}"
+                                            class="text-body text-decoration-none stretched-link"
+                                        >
+                                            {{ $product->name }}
+                                        </a>
+
                                     </h5>
 
 
