@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Mail\PaymentLinkAvailable;
+use Illuminate\Support\Facades\Mail;
 
 class Order extends Model
 {
@@ -64,5 +66,39 @@ class Order extends Model
     public function items(): HasMany
     {
         return $this->hasMany(OrderItem::class);
+    }
+
+    protected static function booted(): void
+    {
+        static::updated(function (Order $order) {
+
+            /*
+             * Solo notificamos cuando payment_url
+             * realmente cambió.
+             */
+            if (!$order->wasChanged('payment_url')) {
+                return;
+            }
+
+            /*
+             * No enviamos nada si el link fue eliminado.
+             */
+            if (blank($order->payment_url)) {
+                return;
+            }
+
+            /*
+             * Si ya está pagado, tampoco tiene sentido
+             * enviar un nuevo link.
+             */
+            if ($order->payment_status === self::PAYMENT_PAID) {
+                return;
+            }
+
+            Mail::to($order->customer_email)
+                ->queue(
+                    new PaymentLinkAvailable($order)
+                );
+        });
     }
 }

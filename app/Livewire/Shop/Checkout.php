@@ -11,6 +11,8 @@ use App\Models\Order;
 use App\Models\Product;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
+use App\Mail\OrderReceived;
+use Illuminate\Support\Facades\Mail;
 use Str;
 class Checkout extends Component
 {
@@ -586,6 +588,19 @@ class Checkout extends Component
         $cart->clear();
 
         $this->dispatch('cart-updated');
+
+        /*
+        |--------------------------------------------------------------------------
+        | 9. Enviar correo de confirmación
+        |--------------------------------------------------------------------------
+        */
+
+        Mail::to($order->customer_email)
+            ->queue(
+                new OrderReceived(
+                    $order->load('items')
+                )
+            );
 
 
         /*
