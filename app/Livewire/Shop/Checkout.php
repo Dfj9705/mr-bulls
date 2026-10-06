@@ -571,6 +571,10 @@ class Checkout extends Component
                 );
             }
 
+            $order->statusHistory()->create([
+                'status' => Order::STATUS_PENDING,
+            ]);
+
 
             return $order;
         });

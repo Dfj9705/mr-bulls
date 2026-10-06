@@ -127,16 +127,18 @@ class OrderResource extends Resource
                 Forms\Components\Section::make('Gestión del pedido')
                     ->schema([
 
-                        Forms\Components\Select::make('status')
-                            ->label('Estado')
-                            ->options([
-                                'pending' => 'Pendiente',
-                                'processing' => 'Procesando',
-                                'shipped' => 'Enviado',
-                                'completed' => 'Completado',
-                                'cancelled' => 'Cancelado',
-                            ])
-                            ->required(),
+                        Forms\Components\Placeholder::make('status_display')
+                            ->label('Estado del pedido')
+                            ->content(function (?Order $record): string {
+                                return match ($record?->status) {
+                                    Order::STATUS_PENDING => 'Pendiente',
+                                    Order::STATUS_PROCESSING => 'Procesando',
+                                    Order::STATUS_SHIPPED => 'Enviado',
+                                    Order::STATUS_COMPLETED => 'Completado',
+                                    Order::STATUS_CANCELLED => 'Cancelado',
+                                    default => '—',
+                                };
+                            }),
 
                         Forms\Components\Select::make('payment_status')
                             ->label('Estado del pago')

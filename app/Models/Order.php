@@ -50,13 +50,19 @@ class Order extends Model
         'shipping_phone',
 
         'public_token',
+
+        'stock_restored_at',
     ];
 
-    protected $casts = [
-        'subtotal' => 'decimal:2',
-        'shipping_cost' => 'decimal:2',
-        'total' => 'decimal:2',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'subtotal' => 'decimal:2',
+            'shipping_cost' => 'decimal:2',
+            'total' => 'decimal:2',
+            'stock_restored_at' => 'datetime',
+        ];
+    }
 
     public function user(): BelongsTo
     {
@@ -100,5 +106,11 @@ class Order extends Model
                     new PaymentLinkAvailable($order)
                 );
         });
+    }
+
+    public function statusHistory(): HasMany
+    {
+        return $this->hasMany(OrderStatusHistory::class)
+            ->orderBy('created_at');
     }
 }
