@@ -46,6 +46,8 @@ class Order extends Model
 
         'shipping_recipient',
         'shipping_phone',
+
+        'public_token',
     ];
 
     protected $casts = [

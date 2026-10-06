@@ -63,10 +63,10 @@
                         {{-- Lo activaremos después --}}
                         <li>
 
-                            <span class="dropdown-item text-muted">
+                            <a href="{{ route('account.orders') }}" class="dropdown-item">
                                 <i class="bx bx-package me-2"></i>
                                 Mis pedidos
-                            </span>
+                            </a>
 
                         </li>
 

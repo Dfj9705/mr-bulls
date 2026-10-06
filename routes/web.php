@@ -71,10 +71,11 @@ Route::post('/logout', [AuthController::class, 'logout'])
     ->middleware('auth')
     ->name('logout');
 
-Route::get('/pedido/{order}/confirmado', function (string $order) {
+Route::get('/pedido/{token}/confirmado', function (string $token) {
 
     $order = Order::query()
-        ->where('order_number', $order)
+        ->with('items')
+        ->where('public_token', $token)
         ->firstOrFail();
 
     return view(
@@ -83,3 +84,11 @@ Route::get('/pedido/{order}/confirmado', function (string $order) {
     );
 
 })->name('orders.success');
+
+
+Route::view(
+    '/mi-cuenta/pedidos',
+    'shop.account.orders'
+)
+    ->middleware('auth')
+    ->name('account.orders');

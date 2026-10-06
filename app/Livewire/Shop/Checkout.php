@@ -11,6 +11,7 @@ use App\Models\Order;
 use App\Models\Product;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
+use Str;
 class Checkout extends Component
 {
     /*
@@ -528,6 +529,8 @@ class Checkout extends Component
 
                 'customer_notes' =>
                     $validated['customerNotes'] ?? null,
+
+                'public_token' => Str::random(64),
             ]);
 
 
@@ -594,7 +597,7 @@ class Checkout extends Component
         return $this->redirectRoute(
             'orders.success',
             [
-                'order' => $order->order_number,
+                'token' => $order->public_token,
             ],
             navigate: true
         );
