@@ -98,111 +98,315 @@
                         </h4>
 
 
-                        @if($order->status === 'cancelled')
+                       @if($order->status === \App\Models\Order::STATUS_CANCELLED)
 
-                            <div class="alert alert-danger mb-0">
+    @php
+        $cancelledHistory = $order->statusHistory
+            ->firstWhere(
+                'status',
+                \App\Models\Order::STATUS_CANCELLED
+            );
+    @endphp
 
-                                <i class="bx bx-x-circle me-2"></i>
+    <div class="alert alert-danger mb-0">
 
-                                Este pedido fue cancelado.
+        <div class="d-flex align-items-start gap-3">
 
-                            </div>
+            <i
+                class="bx bx-x-circle"
+                style="font-size: 2rem;"
+            ></i>
 
-                        @else
+            <div>
 
-                            @php
-                                $steps = [
-                                    'pending' => 1,
-                                    'processing' => 2,
-                                    'shipped' => 3,
-                                    'completed' => 4,
-                                ];
+                <strong class="d-block">
+                    Pedido cancelado
+                </strong>
 
-                                $currentStep =
-                                    $steps[$order->status] ?? 1;
-                            @endphp
+                @if($cancelledHistory)
+
+                    <small>
+                        {{ $cancelledHistory->created_at
+                            ->format('d/m/Y H:i') }}
+                    </small>
+
+                @endif
+
+                <div class="mt-2">
+                    Este pedido fue cancelado.
+                </div>
+
+            </div>
+
+            
+
+        </div>
+        
+
+    </div>
+<div class="mt-4">
+
+    <h6 class="fw-bold mb-3">
+        Historial
+    </h6>
+
+    @foreach($order->statusHistory as $history)
+
+        <div
+            class="d-flex align-items-start gap-3
+                   {{ ! $loop->last ? 'mb-3' : '' }}"
+        >
+
+            <div>
+
+                @if(
+                    $history->status ===
+                    \App\Models\Order::STATUS_CANCELLED
+                )
+
+                    <i
+                        class="bx bx-x-circle text-danger"
+                        style="font-size: 1.4rem;"
+                    ></i>
+
+                @else
+
+                    <i
+                        class="bx bx-check-circle text-success"
+                        style="font-size: 1.4rem;"
+                    ></i>
+
+                @endif
+
+            </div>
+
+            <div>
+
+                <strong class="d-block">
+
+                    {{ match($history->status) {
+                        \App\Models\Order::STATUS_PENDING
+                            => 'Pedido recibido',
+
+                        \App\Models\Order::STATUS_PROCESSING
+                            => 'Pedido en procesamiento',
+
+                        \App\Models\Order::STATUS_SHIPPED
+                            => 'Pedido enviado',
+
+                        \App\Models\Order::STATUS_COMPLETED
+                            => 'Pedido completado',
+
+                        \App\Models\Order::STATUS_CANCELLED
+                            => 'Pedido cancelado',
+
+                        default => ucfirst($history->status),
+                    } }}
+
+                </strong>
+
+                <small class="text-muted">
+                    {{ $history->created_at
+                        ->format('d/m/Y H:i') }}
+                </small>
+
+            </div>
+
+        </div>
+
+    @endforeach
+
+</div>
+@else
+
+    @php
+        $steps = [
+            \App\Models\Order::STATUS_PENDING => 1,
+            \App\Models\Order::STATUS_PROCESSING => 2,
+            \App\Models\Order::STATUS_SHIPPED => 3,
+            \App\Models\Order::STATUS_COMPLETED => 4,
+        ];
+
+        $currentStep =
+            $steps[$order->status] ?? 0;
+
+        $historyByStatus = $order->statusHistory
+            ->keyBy('status');
+    @endphp
 
 
-                            <div class="order-progress">
+    <div class="order-progress">
 
-                                {{-- RECIBIDO --}}
-                                <div
-                                    class="order-progress-item
-                                    {{ $currentStep >= 1 ? 'active' : '' }}"
-                                >
-                                    <div class="order-progress-icon">
-                                        <i class="bx bx-receipt"></i>
-                                    </div>
+        {{-- RECIBIDO --}}
+        @php
+            $pendingHistory = $historyByStatus->get(
+                \App\Models\Order::STATUS_PENDING
+            );
+        @endphp
 
-                                    <div>
-                                        <strong>Recibido</strong>
+        <div
+            class="order-progress-item
+            {{ $currentStep >= 1 ? 'active' : '' }}"
+        >
 
-                                        <small>
-                                            Pedido registrado
-                                        </small>
-                                    </div>
-                                </div>
+            <div class="order-progress-icon">
+                <i class="bx bx-receipt"></i>
+            </div>
 
+            <div>
 
-                                {{-- PROCESANDO --}}
-                                <div
-                                    class="order-progress-item
-                                    {{ $currentStep >= 2 ? 'active' : '' }}"
-                                >
-                                    <div class="order-progress-icon">
-                                        <i class="bx bx-package"></i>
-                                    </div>
+                <strong>
+                    Recibido
+                </strong>
 
-                                    <div>
-                                        <strong>Procesando</strong>
+                @if($pendingHistory)
 
-                                        <small>
-                                            Preparando tu pedido
-                                        </small>
-                                    </div>
-                                </div>
+                    <small>
+                        {{ $pendingHistory->created_at
+                            ->format('d/m/Y H:i') }}
+                    </small>
 
+                @else
 
-                                {{-- ENVIADO --}}
-                                <div
-                                    class="order-progress-item
-                                    {{ $currentStep >= 3 ? 'active' : '' }}"
-                                >
-                                    <div class="order-progress-icon">
-                                        <i class="bx bx-car"></i>
-                                    </div>
+                    <small>
+                        Pedido registrado
+                    </small>
 
-                                    <div>
-                                        <strong>Enviado</strong>
+                @endif
 
-                                        <small>
-                                            Pedido en camino
-                                        </small>
-                                    </div>
-                                </div>
+            </div>
+
+        </div>
 
 
-                                {{-- COMPLETADO --}}
-                                <div
-                                    class="order-progress-item
-                                    {{ $currentStep >= 4 ? 'active' : '' }}"
-                                >
-                                    <div class="order-progress-icon">
-                                        <i class="bx bx-check"></i>
-                                    </div>
+        {{-- PROCESANDO --}}
+        @php
+            $processingHistory = $historyByStatus->get(
+                \App\Models\Order::STATUS_PROCESSING
+            );
+        @endphp
 
-                                    <div>
-                                        <strong>Completado</strong>
+        <div
+            class="order-progress-item
+            {{ $currentStep >= 2 ? 'active' : '' }}"
+        >
 
-                                        <small>
-                                            Pedido entregado
-                                        </small>
-                                    </div>
-                                </div>
+            <div class="order-progress-icon">
+                <i class="bx bx-package"></i>
+            </div>
 
-                            </div>
+            <div>
 
-                        @endif
+                <strong>
+                    Procesando
+                </strong>
+
+                @if($processingHistory)
+
+                    <small>
+                        {{ $processingHistory->created_at
+                            ->format('d/m/Y H:i') }}
+                    </small>
+
+                @else
+
+                    <small>
+                        Pendiente
+                    </small>
+
+                @endif
+
+            </div>
+
+        </div>
+
+
+        {{-- ENVIADO --}}
+        @php
+            $shippedHistory = $historyByStatus->get(
+                \App\Models\Order::STATUS_SHIPPED
+            );
+        @endphp
+
+        <div
+            class="order-progress-item
+            {{ $currentStep >= 3 ? 'active' : '' }}"
+        >
+
+            <div class="order-progress-icon">
+                <i class="bx bx-car"></i>
+            </div>
+
+            <div>
+
+                <strong>
+                    Enviado
+                </strong>
+
+                @if($shippedHistory)
+
+                    <small>
+                        {{ $shippedHistory->created_at
+                            ->format('d/m/Y H:i') }}
+                    </small>
+
+                @else
+
+                    <small>
+                        Pendiente
+                    </small>
+
+                @endif
+
+            </div>
+
+        </div>
+
+
+        {{-- COMPLETADO --}}
+        @php
+            $completedHistory = $historyByStatus->get(
+                \App\Models\Order::STATUS_COMPLETED
+            );
+        @endphp
+
+        <div
+            class="order-progress-item
+            {{ $currentStep >= 4 ? 'active' : '' }}"
+        >
+
+            <div class="order-progress-icon">
+                <i class="bx bx-check"></i>
+            </div>
+
+            <div>
+
+                <strong>
+                    Completado
+                </strong>
+
+                @if($completedHistory)
+
+                    <small>
+                        {{ $completedHistory->created_at
+                            ->format('d/m/Y H:i') }}
+                    </small>
+
+                @else
+
+                    <small>
+                        Pendiente
+                    </small>
+
+                @endif
+
+            </div>
+
+        </div>
+
+    </div>
+
+@endif  
 
                     </div>
 
@@ -435,6 +639,8 @@
                                 @endif
 
                             </div>
+
+                            
 
                         </div>
 

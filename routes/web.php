@@ -74,7 +74,10 @@ Route::post('/logout', [AuthController::class, 'logout'])
 Route::get('/pedido/{token}/confirmado', function (string $token) {
 
     $order = Order::query()
-        ->with('items')
+        ->with([
+            'items',
+            'statusHistory',
+        ])
         ->where('public_token', $token)
         ->firstOrFail();
 
