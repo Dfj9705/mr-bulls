@@ -30,7 +30,7 @@ class PaymentLinkAvailable extends Mailable implements ShouldQueue
     public function content(): Content
     {
         return new Content(
-            markdown: 'emails.orders.payment-link',
+            view: 'emails.orders.payment-link',
         );
     }
 
