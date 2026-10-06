@@ -24,8 +24,11 @@ class EditOrder extends EditRecord
                 ->icon('heroicon-o-cog-6-tooth')
                 ->color('info')
                 ->requiresConfirmation()
+                ->authorize(fn(): bool =>
+                    auth()->user()?->can('pedidos.procesar'))
                 ->visible(
                     fn(): bool =>
+                        auth()->user()?->can('pedidos.procesar') &&
                         $this->record->status === Order::STATUS_PENDING
                 )
                 ->action(function (OrderService $orderService): void {
@@ -53,8 +56,11 @@ class EditOrder extends EditRecord
                 ->icon('heroicon-o-truck')
                 ->color('primary')
                 ->requiresConfirmation()
+                ->authorize(fn(): bool =>
+                    auth()->user()?->can('pedidos.procesar'))
                 ->visible(
                     fn(): bool =>
+                        auth()->user()?->can('pedidos.procesar') &&
                         $this->record->status === Order::STATUS_PROCESSING
                 )
                 ->action(function (OrderService $orderService): void {
@@ -82,8 +88,11 @@ class EditOrder extends EditRecord
                 ->icon('heroicon-o-check-circle')
                 ->color('success')
                 ->requiresConfirmation()
+                ->authorize(fn(): bool =>
+                    auth()->user()?->can('pedidos.procesar'))
                 ->visible(
                     fn(): bool =>
+                        auth()->user()?->can('pedidos.procesar') &&
                         $this->record->status === Order::STATUS_SHIPPED
                 )
                 ->action(function (OrderService $orderService): void {
@@ -116,8 +125,11 @@ class EditOrder extends EditRecord
                     'El pedido será cancelado y las unidades serán devueltas al inventario. Esta acción no se puede revertir.'
                 )
                 ->modalSubmitActionLabel('Sí, cancelar pedido')
+                ->authorize(fn(): bool =>
+                    auth()->user()?->can('pedidos.cancelar'))
                 ->visible(
                     fn(): bool =>
+                        auth()->user()?->can('pedidos.cancelar') &&
                         in_array(
                             $this->record->status,
                             [

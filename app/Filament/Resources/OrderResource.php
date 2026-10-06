@@ -148,17 +148,29 @@ class OrderResource extends Resource
                                 'failed' => 'Fallido',
                                 'cancelled' => 'Cancelado',
                             ])
-                            ->required(),
+                            ->required()
+                            ->disabled(
+                                fn(): bool =>
+                                    !(auth()->user()?->can('pagos.gestionar') ?? false)
+                            ),
 
                         Forms\Components\TextInput::make('payment_method')
                             ->label('Método de pago')
-                            ->maxLength(50),
+                            ->maxLength(50)
+                            ->disabled(
+                                fn(): bool =>
+                                    !(auth()->user()?->can('pagos.gestionar') ?? false)
+                            ),
 
                         Forms\Components\TextInput::make('payment_url')
                             ->label('Link de pago')
                             ->url()
                             ->maxLength(2048)
-                            ->columnSpanFull(),
+                            ->columnSpanFull()
+                            ->disabled(
+                                fn(): bool =>
+                                    !(auth()->user()?->can('pagos.gestionar') ?? false)
+                            ),
 
                         Forms\Components\Textarea::make('admin_notes')
                             ->label('Notas internas')
@@ -303,6 +315,26 @@ class OrderResource extends Resource
     }
 
     public static function canCreate(): bool
+    {
+        return false;
+    }
+
+    public static function canViewAny(): bool
+    {
+        return auth()->user()?->can('pedidos.ver') ?? false;
+    }
+
+    public static function canView($record): bool
+    {
+        return auth()->user()?->can('pedidos.ver') ?? false;
+    }
+
+    public static function canDelete($record): bool
+    {
+        return false;
+    }
+
+    public static function canDeleteAny(): bool
     {
         return false;
     }

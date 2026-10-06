@@ -82,6 +82,8 @@ class AuthController extends Controller
             ),
         ]);
 
+        $user->assignRole('Cliente');
+
         Auth::login($user);
 
         $request->session()->regenerate();
