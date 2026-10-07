@@ -93,11 +93,14 @@ class ProductResource extends Resource
                             ->helperText('Opcional. Se utilizará para mostrar ofertas.'),
 
                         Forms\Components\TextInput::make('stock')
-                            ->label('Existencias')
+                            ->label('Stock inicial')
                             ->numeric()
-                            ->required()
+                            ->integer()
+                            ->minValue(0)
                             ->default(0)
-                            ->minValue(0),
+                            ->required()
+                            ->visibleOn('create'),
+
                     ])
                     ->columns(3),
 
@@ -220,7 +223,7 @@ class ProductResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\InventoryMovementsRelationManager::class,
         ];
     }
 

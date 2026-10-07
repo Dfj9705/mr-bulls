@@ -51,6 +51,9 @@ class RolesAndPermissionsSeeder extends Seeder
             'panel.acceder',
 
             'roles.gestionar',
+
+            'inventario.ver',
+            'inventario.ajustar',
         ];
 
         foreach ($permissions as $permission) {
