@@ -63,47 +63,49 @@ class RoleResource extends Resource
                     ->schema([
                         Forms\Components\CheckboxList::make('permissions')
                             ->label('')
-                            ->relationship(
-                                name: 'permissions',
-                                titleAttribute: 'name',
-                                modifyQueryUsing: fn(Builder $query) =>
-                                    $query
-                                        ->where('guard_name', 'web')
-                                        ->orderBy('name')
-                            )
-                            ->getOptionLabelFromRecordUsing(
-                                function ($record): string {
-                                    [$module, $action] = array_pad(
-                                        explode('.', $record->name, 2),
-                                        2,
-                                        ''
-                                    );
+                            ->options(
+                                \Spatie\Permission\Models\Permission::query()
+                                    ->where('guard_name', 'web')
+                                    ->orderBy('name')
+                                    ->get()
+                                    ->mapWithKeys(function ($permission) {
 
-                                    $actions = [
-                                        'ver' => 'Ver',
-                                        'crear' => 'Crear',
-                                        'editar' => 'Editar',
-                                        'eliminar' => 'Eliminar',
-                                        'procesar' => 'Procesar',
-                                        'cancelar' => 'Cancelar',
-                                        'gestionar' => 'Gestionar',
-                                        'acceder' => 'Acceder',
-                                    ];
+                                        [$module, $action] = array_pad(
+                                            explode('.', $permission->name, 2),
+                                            2,
+                                            ''
+                                        );
 
-                                    return sprintf(
-                                        '%s — %s',
-                                        ucfirst($module),
-                                        $actions[$action] ?? ucfirst($action)
-                                    );
-                                }
+                                        $actions = [
+                                            'ver' => 'Ver',
+                                            'crear' => 'Crear',
+                                            'editar' => 'Editar',
+                                            'eliminar' => 'Eliminar',
+                                            'procesar' => 'Procesar',
+                                            'cancelar' => 'Cancelar',
+                                            'gestionar' => 'Gestionar',
+                                            'acceder' => 'Acceder',
+                                        ];
+
+                                        $label = sprintf(
+                                            '%s — %s',
+                                            ucfirst($module),
+                                            $actions[$action] ?? ucfirst($action)
+                                        );
+
+                                        return [
+                                            $permission->id => $label,
+                                        ];
+                                    })
+                                    ->toArray()
                             )
+                            ->columns(2)
+                            ->bulkToggleable()
+                            ->searchable()
                             ->disabled(
                                 fn(?Role $record): bool =>
                                     $record?->name === 'Administrador'
                             )
-                            ->bulkToggleable()
-                            ->columns(2)
-                            ->searchable(),
                     ]),
             ]);
     }
