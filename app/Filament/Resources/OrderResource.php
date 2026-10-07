@@ -175,7 +175,13 @@ class OrderResource extends Resource
                         Forms\Components\Textarea::make('admin_notes')
                             ->label('Notas internas')
                             ->rows(4)
-                            ->columnSpanFull(),
+                            ->columnSpanFull()
+                            ->disabled(
+                                fn() => !auth()->user()?->can('pedidos.procesar')
+                            )
+                            ->dehydrated(
+                                fn() => auth()->user()?->can('pedidos.procesar')
+                            ),
 
                     ])
                     ->columns(2),
