@@ -113,4 +113,9 @@ class Order extends Model
         return $this->hasMany(OrderStatusHistory::class)
             ->orderBy('created_at');
     }
+
+    public function inventoryMovements(): HasMany
+    {
+        return $this->hasMany(InventoryMovement::class);
+    }
 }

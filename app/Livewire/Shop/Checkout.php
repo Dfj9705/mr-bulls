@@ -3,6 +3,7 @@
 namespace App\Livewire\Shop;
 
 use App\Models\Address;
+use App\Models\InventoryMovement;
 use App\Services\CartService;
 use App\Support\GuatemalaLocations;
 use Illuminate\Support\Facades\Auth;
@@ -565,10 +566,25 @@ class Checkout extends Component
                     $item['product_id']
                 );
 
+                $stockBefore = $product->stock;
+                $quantity = $item['quantity'];
+                $stockAfter = $stockBefore - $quantity;
+
                 $product->decrement(
                     'stock',
-                    $item['quantity']
+                    $quantity
                 );
+
+                InventoryMovement::create([
+                    'product_id' => $product->id,
+                    'order_id' => $order->id,
+                    'user_id' => auth()->id(),
+                    'type' => 'sale',
+                    'quantity' => -$quantity,
+                    'stock_before' => $stockBefore,
+                    'stock_after' => $stockAfter,
+                    'reason' => "Venta - Pedido {$order->order_number}",
+                ]);
             }
 
             $order->statusHistory()->create([

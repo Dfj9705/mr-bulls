@@ -6,6 +6,7 @@ use App\Models\Order;
 use App\Models\Product;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
+use App\Models\InventoryMovement;
 
 class OrderService
 {
@@ -63,10 +64,23 @@ class OrderService
                         continue;
                     }
 
-                    $product->increment(
-                        'stock',
-                        $item->quantity
-                    );
+                    $stockBefore = $product->stock;
+                    $quantity = $item->quantity;
+
+                    $product->increment('stock', $quantity);
+
+                    $stockAfter = $stockBefore + $quantity;
+
+                    InventoryMovement::create([
+                        'product_id' => $product->id,
+                        'order_id' => $order->id,
+                        'user_id' => auth()->id(),
+                        'type' => 'cancellation',
+                        'quantity' => $quantity,
+                        'stock_before' => $stockBefore,
+                        'stock_after' => $stockAfter,
+                        'reason' => "Cancelación - Pedido {$order->order_number}",
+                    ]);
                 }
 
                 $order->stock_restored_at = now();
