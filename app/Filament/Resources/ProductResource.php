@@ -101,6 +101,15 @@ class ProductResource extends Resource
                             ->required()
                             ->visibleOn('create'),
 
+                        Forms\Components\TextInput::make('minimum_stock')
+                            ->label('Stock mínimo')
+                            ->numeric()
+                            ->integer()
+                            ->minValue(0)
+                            ->default(5)
+                            ->required()
+                            ->helperText('Se mostrará una alerta cuando el stock llegue a este nivel.'),
+
                     ])
                     ->columns(3),
 
@@ -174,7 +183,27 @@ class ProductResource extends Resource
                 Tables\Columns\TextColumn::make('stock')
                     ->label('Stock')
                     ->numeric()
-                    ->sortable(),
+                    ->sortable()
+                    ->badge()
+                    ->color(fn(Product $record): string => match (true) {
+                        $record->stock === 0 => 'danger',
+                        $record->stock <= $record->minimum_stock => 'warning',
+                        default => 'success',
+                    }),
+
+                Tables\Columns\TextColumn::make('inventory_status')
+                    ->label('Inventario')
+                    ->getStateUsing(fn(Product $record): string => match (true) {
+                        $record->stock === 0 => 'Agotado',
+                        $record->stock <= $record->minimum_stock => 'Bajo stock',
+                        default => 'Disponible',
+                    })
+                    ->badge()
+                    ->color(fn(string $state): string => match ($state) {
+                        'Agotado' => 'danger',
+                        'Bajo stock' => 'warning',
+                        default => 'success',
+                    }),
 
                 Tables\Columns\IconColumn::make('is_featured')
                     ->label('Destacado')
@@ -208,6 +237,21 @@ class ProductResource extends Resource
                     ->trueLabel('Destacados')
                     ->falseLabel('No destacados')
                     ->placeholder('Todos'),
+
+                Tables\Filters\Filter::make('low_stock')
+                    ->label('Bajo stock')
+                    ->query(
+                        fn(Builder $query): Builder =>
+                            $query->where('stock', '>', 0)
+                                ->whereColumn('stock', '<=', 'minimum_stock')
+                    ),
+
+                Tables\Filters\Filter::make('out_of_stock')
+                    ->label('Agotados')
+                    ->query(
+                        fn(Builder $query): Builder =>
+                            $query->where('stock', 0)
+                    ),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
