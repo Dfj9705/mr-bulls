@@ -1,200 +1,573 @@
-/* Mr Bulls - Public Store */
+/* =========================================================
+   MR BULLS — PUBLIC STORE
+   Design System
+========================================================= */
+
+:root {
+    --mb-navy: #142334;
+    --mb-navy-dark: #0d1824;
+
+    --mb-red: #981223;
+    --mb-red-dark: #79101d;
+
+    --mb-bg: #f7f7f5;
+    --mb-surface: #ffffff;
+    --mb-surface-soft: #f2f3f3;
+
+    --mb-text: #142334;
+    --mb-muted: #68717d;
+    --mb-border: #e4e6e8;
+
+    --mb-radius-sm: .75rem;
+    --mb-radius: 1rem;
+    --mb-radius-lg: 1.5rem;
+
+    --mb-shadow:
+        0 10px 30px rgba(20, 35, 52, .07);
+
+    --mb-shadow-hover:
+        0 18px 45px rgba(20, 35, 52, .12);
+
+    /* Bootstrap / Sneat */
+    --bs-primary: #142334;
+    --bs-primary-rgb: 20, 35, 52;
+
+    --bs-link-color: #142334;
+    --bs-link-hover-color: #981223;
+}
+
+
+/* =========================================================
+   BASE
+========================================================= */
+
+html {
+    scroll-behavior: smooth;
+}
 
 body {
-    background-color: #f5f5f9;
+    background-color: var(--mb-bg);
+    color: var(--mb-text);
 }
 
-.hero-placeholder {
-    min-height: 420px;
-    background: #e9ecef;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #8592a3;
+
+/* =========================================================
+   TEXTOS
+========================================================= */
+
+.text-primary {
+    color: var(--mb-red) !important;
 }
+
+.text-muted {
+    color: var(--mb-muted) !important;
+}
+
+a {
+    transition:
+        color .2s ease,
+        background-color .2s ease,
+        border-color .2s ease;
+}
+
+
+/* =========================================================
+   BOTONES
+========================================================= */
+
+.btn {
+    border-radius: .75rem;
+
+    transition:
+        background-color .2s ease,
+        border-color .2s ease,
+        color .2s ease,
+        transform .2s ease,
+        box-shadow .2s ease;
+}
+
+.btn-primary {
+    border-color: var(--mb-navy);
+    background: var(--mb-navy);
+
+    color: #fff;
+
+    font-weight: 700;
+
+    box-shadow: none;
+}
+
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active {
+    border-color: var(--mb-red) !important;
+    background: var(--mb-red) !important;
+
+    color: #fff !important;
+
+    box-shadow: none !important;
+}
+
+.btn-outline-primary {
+    border-color: var(--mb-navy);
+
+    color: var(--mb-navy);
+
+    font-weight: 600;
+}
+
+.btn-outline-primary:hover,
+.btn-outline-primary:focus,
+.btn-outline-primary:active {
+    border-color: var(--mb-navy) !important;
+    background: var(--mb-navy) !important;
+
+    color: #fff !important;
+}
+
+
+/* =========================================================
+   CARDS
+========================================================= */
+
+.card {
+    border-color: var(--mb-border);
+
+    border-radius: var(--mb-radius);
+
+    background: var(--mb-surface);
+}
+
+.card.border-0 {
+    border: 1px solid var(--mb-border) !important;
+}
+
+.shadow-sm {
+    box-shadow: var(--mb-shadow) !important;
+}
+
+
+/* =========================================================
+   FORMULARIOS
+========================================================= */
+
+.form-control,
+.form-select,
+.input-group-text {
+    border-color: var(--mb-border);
+}
+
+.form-control,
+.form-select {
+    min-height: 44px;
+
+    border-radius: var(--mb-radius-sm);
+
+    background-color: #fff;
+
+    color: var(--mb-text);
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--mb-navy);
+
+    box-shadow:
+        0 0 0 .2rem rgba(20, 35, 52, .08);
+}
+
+.form-label {
+    color: var(--mb-text);
+
+    font-size: .875rem;
+    font-weight: 600;
+}
+
+.input-group-text {
+    background-color: #fff;
+
+    color: var(--mb-muted);
+}
+
+.form-check-input:checked {
+    border-color: var(--mb-navy);
+    background-color: var(--mb-navy);
+}
+
+.form-check-input:focus {
+    border-color: var(--mb-navy);
+
+    box-shadow:
+        0 0 0 .2rem rgba(20, 35, 52, .08);
+}
+
+
+/* =========================================================
+   CABECERAS INTERIORES
+========================================================= */
+
+.page-header {
+    border-bottom: 1px solid var(--mb-border);
+
+    background:
+        linear-gradient(
+            135deg,
+            #ffffff 0%,
+            #f7f8f9 100%
+        );
+}
+
+.page-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: .65rem;
+
+    margin-bottom: .6rem;
+
+    color: var(--mb-red);
+
+    font-size: .75rem;
+    font-weight: 800;
+    letter-spacing: .15em;
+
+    text-transform: uppercase;
+}
+
+.page-eyebrow::before {
+    content: "";
+
+    width: 25px;
+    height: 2px;
+
+    background: var(--mb-red);
+}
+
+.page-title {
+    margin: 0;
+
+    color: var(--mb-navy);
+
+    font-weight: 800;
+    letter-spacing: -.025em;
+}
+
+
+/* =========================================================
+   CATEGORÍAS Y PRODUCTOS
+========================================================= */
 
 .category-card,
 .product-card {
-    transition:
-        transform 0.2s ease,
-        box-shadow 0.2s ease;
     overflow: hidden;
+
+    border: 1px solid var(--mb-border) !important;
+    border-radius: var(--mb-radius-lg);
+
+    background: var(--mb-surface);
+
+    box-shadow: var(--mb-shadow) !important;
+
+    transition:
+        transform .25s ease,
+        box-shadow .25s ease,
+        border-color .25s ease;
 }
 
 .category-card:hover,
 .product-card:hover {
-    transform: translateY(-4px);
+    transform: translateY(-6px);
+
+    border-color: rgba(20, 35, 52, .15) !important;
+
+    box-shadow: var(--mb-shadow-hover) !important;
+}
+
+.category-card .card-title,
+.product-card .card-title {
+    color: var(--mb-navy);
+
+    font-weight: 700;
+}
+
+.product-card .card-title a:hover {
+    color: var(--mb-red) !important;
 }
 
 .category-image {
+    width: 100%;
     height: 180px;
+
     object-fit: cover;
 }
 
 .category-image-placeholder {
-    height: 180px;
-    background: #f1f1f4;
     display: flex;
     align-items: center;
     justify-content: center;
+
+    height: 180px;
+
+    background: var(--mb-surface-soft);
+
     color: #a1acb8;
 }
 
 .product-image {
     width: 100%;
+
     aspect-ratio: 1 / 1;
+
     object-fit: cover;
 }
 
 .product-image-placeholder {
-    width: 100%;
-    aspect-ratio: 1 / 1;
-    background: #f1f1f4;
     display: flex;
     align-items: center;
     justify-content: center;
+
+    width: 100%;
+
+    aspect-ratio: 1 / 1;
+
+    background: var(--mb-surface-soft);
+
     color: #a1acb8;
 }
 
 
+/* =========================================================
+   DETALLE DEL PRODUCTO
+========================================================= */
+
 .product-detail-main {
-    width: 100%;
-    aspect-ratio: 1 / 1;
-    background: #fff;
-    border-radius: 1rem;
-    overflow: hidden;
     display: flex;
     align-items: center;
     justify-content: center;
+
+    width: 100%;
+
+    aspect-ratio: 1 / 1;
+
+    overflow: hidden;
+
+    border: 1px solid var(--mb-border);
+    border-radius: var(--mb-radius-lg);
+
+    background: #fff;
+
+    box-shadow: var(--mb-shadow);
 }
 
 .product-detail-main img {
     width: 100%;
     height: 100%;
+
     object-fit: contain;
 }
 
 .product-detail-placeholder {
-    width: 100%;
-    height: 100%;
-    background: #f1f1f4;
     display: flex;
     align-items: center;
     justify-content: center;
+
+    width: 100%;
+    height: 100%;
+
+    background: var(--mb-surface-soft);
+
     color: #a1acb8;
+
     font-size: 4rem;
 }
 
 .product-gallery {
     display: flex;
-    gap: 0.75rem;
+    gap: .75rem;
+
     overflow-x: auto;
-    padding-bottom: 0.5rem;
+
+    padding-bottom: .5rem;
 }
 
 .product-thumbnail {
     width: 82px;
     height: 82px;
+
     flex: 0 0 82px;
+
     padding: 3px;
-    border: 2px solid transparent;
-    border-radius: 0.75rem;
-    background: #fff;
+
     overflow: hidden;
+
+    border: 2px solid transparent;
+    border-radius: var(--mb-radius-sm);
+
+    background: #fff;
+
     cursor: pointer;
-    transition: border-color 0.2s ease;
+
+    transition:
+        border-color .2s ease,
+        box-shadow .2s ease,
+        transform .2s ease;
 }
 
-.product-thumbnail:hover,
+.product-thumbnail:hover {
+    border-color: rgba(20, 35, 52, .35);
+
+    transform: translateY(-2px);
+}
+
 .product-thumbnail.active {
-    border-color: var(--bs-primary);
+    border-color: var(--mb-navy);
+
+    box-shadow:
+        0 0 0 2px rgba(20, 35, 52, .08);
 }
 
 .product-thumbnail img {
     width: 100%;
     height: 100%;
+
     object-fit: cover;
 }
 
 .product-description {
+    color: var(--mb-muted);
+
     line-height: 1.8;
 }
 
+
+/* =========================================================
+   CARRITO
+========================================================= */
+
 .cart-product-image {
     width: 100%;
+
     aspect-ratio: 1 / 1;
+
+    border-radius: var(--mb-radius-sm);
+
     object-fit: cover;
 }
 
 .cart-product-placeholder {
-    width: 100%;
-    aspect-ratio: 1 / 1;
-    background: #f1f1f4;
-    border-radius: 0.5rem;
     display: flex;
     align-items: center;
     justify-content: center;
+
+    width: 100%;
+
+    aspect-ratio: 1 / 1;
+
+    border-radius: var(--mb-radius-sm);
+
+    background: var(--mb-surface-soft);
+
     color: #a1acb8;
+
     font-size: 2rem;
 }
 
+
+/* =========================================================
+   CHECKOUT — DIRECCIONES
+========================================================= */
+
 .checkout-address-card {
     min-height: 150px;
+
     padding: 1rem;
-    border: 2px solid #e6e7eb;
-    border-radius: 0.75rem;
-    background: #fff;
+
+    border: 2px solid var(--mb-border);
+    border-radius: var(--mb-radius);
+
+    background: var(--mb-surface);
+
     transition:
-        border-color 0.2s ease,
-        background-color 0.2s ease,
-        box-shadow 0.2s ease;
+        border-color .2s ease,
+        background-color .2s ease,
+        box-shadow .2s ease,
+        transform .2s ease;
 }
 
 .checkout-address-card:hover {
-    border-color: rgba(var(--bs-primary-rgb), 0.5);
+    border-color: rgba(20, 35, 52, .35);
+
+    transform: translateY(-2px);
 }
 
 .checkout-address-card.active {
-    border-color: var(--bs-primary);
-    background: rgba(var(--bs-primary-rgb), 0.04);
-    box-shadow: 0 0 0 1px var(--bs-primary);
+    border-color: var(--mb-navy);
+
+    background: rgba(20, 35, 52, .025);
+
+    box-shadow:
+        0 0 0 1px var(--mb-navy),
+        var(--mb-shadow);
 }
 
+
+/* =========================================================
+   PEDIDOS — PROGRESO
+========================================================= */
+
 .order-progress {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
     position: relative;
+
+    display: grid;
+
+    grid-template-columns: repeat(4, 1fr);
+
     gap: 1rem;
 }
 
 .order-progress::before {
     content: "";
+
     position: absolute;
-    top: 24px;
-    left: 12.5%;
-    right: 12.5%;
-    height: 2px;
-    background: #e6e7eb;
     z-index: 0;
+
+    top: 24px;
+    right: 12.5%;
+    left: 12.5%;
+
+    height: 2px;
+
+    background: var(--mb-border);
 }
 
 .order-progress-item {
     position: relative;
     z-index: 1;
-    text-align: center;
+
     color: #a1acb8;
+
+    text-align: center;
 }
 
 .order-progress-icon {
-    width: 48px;
-    height: 48px;
-    margin: 0 auto 0.75rem;
-    border-radius: 50%;
-    background: #f1f1f4;
     display: flex;
     align-items: center;
     justify-content: center;
+
+    width: 48px;
+    height: 48px;
+
+    margin: 0 auto .75rem;
+
+    border-radius: 50%;
+
+    background: var(--mb-surface-soft);
+
     font-size: 1.4rem;
+
+    transition:
+        background-color .2s ease,
+        color .2s ease,
+        box-shadow .2s ease;
 }
 
 .order-progress-item strong,
@@ -203,41 +576,20 @@ body {
 }
 
 .order-progress-item.active {
-    color: var(--bs-primary);
+    color: var(--mb-navy);
 }
 
 .order-progress-item.active .order-progress-icon {
-    background: var(--bs-primary);
+    background: var(--mb-navy);
+
     color: #fff;
 }
 
-@media (max-width: 767.98px) {
-    .order-progress {
-        grid-template-columns: 1fr;
-        gap: 1.25rem;
-    }
-
-    .order-progress::before {
-        top: 24px;
-        bottom: 24px;
-        left: 23px;
-        right: auto;
-        width: 2px;
-        height: auto;
-    }
-
-    .order-progress-item {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        text-align: left;
-    }
-
-    .order-progress-icon {
-        flex: 0 0 48px;
-        margin: 0;
-    }
+.order-progress-item.active:last-child .order-progress-icon {
+    box-shadow:
+        0 0 0 5px rgba(20, 35, 52, .08);
 }
+
 
 /* =========================================================
    MR BULLS HERO
@@ -245,11 +597,13 @@ body {
 
 .mr-bulls-hero {
     position: relative;
+
     overflow: hidden;
+
     background:
         radial-gradient(
             circle at 80% 40%,
-            rgba(150, 18, 35, .10),
+            rgba(152, 18, 35, .10),
             transparent 32%
         ),
         linear-gradient(
@@ -265,14 +619,14 @@ body {
 }
 
 
-/* Eyebrow */
+/* Hero eyebrow */
 
 .hero-eyebrow {
     display: inline-flex;
     align-items: center;
     gap: .75rem;
 
-    color: #981223;
+    color: var(--mb-red);
 
     font-size: .82rem;
     font-weight: 800;
@@ -281,20 +635,23 @@ body {
 
 .hero-eyebrow::before {
     content: "";
+
     width: 35px;
     height: 3px;
-    background: #981223;
+
+    background: var(--mb-red);
 }
 
 
-/* Título */
+/* Hero título */
 
 .hero-title {
     max-width: 650px;
+
     margin-top: 1rem;
     margin-bottom: 1.5rem;
 
-    color: #142334;
+    color: var(--mb-navy);
 
     font-size: clamp(3.4rem, 6vw, 6rem);
     font-weight: 900;
@@ -304,59 +661,69 @@ body {
 
 .hero-title span {
     display: block;
-    color: #981223;
+
+    color: var(--mb-red);
 }
 
 
-/* Descripción */
+/* Hero descripción */
 
 .hero-description {
     max-width: 540px;
 
-    color: #68717d;
+    color: var(--mb-muted);
 
     font-size: 1.15rem;
     line-height: 1.75;
 }
 
 
-/* Botones */
+/* Hero botones */
 
 .hero-btn-primary {
     padding: .9rem 1.7rem;
 
-    border-color: #142334;
-    background: #142334;
+    border-color: var(--mb-navy);
+    border-radius: .75rem;
+
+    background: var(--mb-navy);
+
     color: #fff;
 
     font-weight: 700;
 }
 
 .hero-btn-primary:hover {
-    border-color: #981223;
-    background: #981223;
+    border-color: var(--mb-red);
+
+    background: var(--mb-red);
+
     color: #fff;
 }
-
 
 .hero-btn-secondary {
     padding: .9rem 1.7rem;
 
-    border: 1px solid #d9dde2;
+    border: 1px solid var(--mb-border);
+    border-radius: .75rem;
+
     background: #fff;
-    color: #142334;
+
+    color: var(--mb-navy);
 
     font-weight: 700;
 }
 
 .hero-btn-secondary:hover {
-    border-color: #142334;
-    background: #142334;
+    border-color: var(--mb-navy);
+
+    background: var(--mb-navy);
+
     color: #fff;
 }
 
 
-/* Línea inferior */
+/* Hero línea inferior */
 
 .hero-brand-line {
     display: flex;
@@ -367,7 +734,8 @@ body {
 .hero-brand-line span {
     width: 55px;
     height: 2px;
-    background: #981223;
+
+    background: var(--mb-red);
 }
 
 .hero-brand-line small {
@@ -380,15 +748,15 @@ body {
 
 
 /* =========================================================
-   IMAGEN
+   HERO — IMAGEN
 ========================================================= */
 
 .hero-visual {
     position: relative;
 
     display: flex;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
 
     min-height: 520px;
 }
@@ -403,7 +771,7 @@ body {
 
     border-radius: 2rem;
 
-    background: #142334;
+    background: var(--mb-navy);
 
     box-shadow:
         0 30px 70px rgba(20, 35, 52, .20);
@@ -417,11 +785,9 @@ body {
     object-position: center;
 }
 
-
-/* Badge sobre imagen */
-
 .hero-image-badge {
     position: absolute;
+
     right: 25px;
     bottom: 25px;
 
@@ -459,9 +825,7 @@ body {
 }
 
 
-/* =========================================================
-   DECORACIÓN
-========================================================= */
+/* Hero decoración */
 
 .hero-decoration {
     position: absolute;
@@ -490,53 +854,6 @@ body {
 
 
 /* =========================================================
-   RESPONSIVE
-========================================================= */
-
-@media (max-width: 991.98px) {
-
-    .min-vh-hero {
-        min-height: auto;
-    }
-
-    .hero-title {
-        font-size: clamp(3rem, 12vw, 5rem);
-    }
-
-    .hero-visual {
-        min-height: auto;
-        padding-bottom: 4rem;
-    }
-
-    .hero-image-wrapper {
-        height: 480px;
-    }
-
-}
-
-
-@media (max-width: 575.98px) {
-
-    .hero-title {
-        font-size: 3.2rem;
-    }
-
-    .hero-description {
-        font-size: 1rem;
-    }
-
-    .hero-image-wrapper {
-        height: 390px;
-        border-radius: 1.5rem;
-    }
-
-    .hero-brand-line {
-        display: none;
-    }
-
-}
-
-/* =========================================================
    NAVBAR MR BULLS
 ========================================================= */
 
@@ -544,7 +861,9 @@ body {
     position: relative;
     z-index: 1030;
 
-    border-bottom: 1px solid #e9ecef;
+    border-bottom: 1px solid var(--mb-border);
+
+    background: #fff;
 }
 
 
@@ -579,7 +898,8 @@ body {
     left: 1rem;
     z-index: 2;
 
-    color: #6c757d;
+    color: var(--mb-muted);
+
     font-size: 1.25rem;
 
     pointer-events: none;
@@ -588,10 +908,10 @@ body {
 .navbar-search .form-control {
     height: 46px;
 
-    padding-left: 2.8rem;
     padding-right: 1rem;
+    padding-left: 2.8rem;
 
-    border: 1px solid #e1e4e8;
+    border: 1px solid var(--mb-border);
     border-radius: 50rem;
 
     background: #f7f8fa;
@@ -605,14 +925,16 @@ body {
 }
 
 .navbar-search .form-control:focus {
-    border-color: #142334;
+    border-color: var(--mb-navy);
+
     background: #fff;
 
-    box-shadow: 0 0 0 .2rem rgba(20, 35, 52, .08);
+    box-shadow:
+        0 0 0 .2rem rgba(20, 35, 52, .08);
 }
 
 
-/* Acciones */
+/* Navbar acciones */
 
 .navbar-action {
     display: inline-flex;
@@ -627,7 +949,8 @@ body {
     border-radius: .75rem;
 
     background: transparent;
-    color: #142334;
+
+    color: var(--mb-navy);
 
     text-decoration: none;
 
@@ -639,7 +962,8 @@ body {
 .navbar-action:hover,
 .navbar-action:focus {
     background: #f5f6f8;
-    color: #981223;
+
+    color: var(--mb-red);
 }
 
 .navbar-action > i:first-child {
@@ -665,7 +989,7 @@ body {
 }
 
 
-/* Dropdown cuenta */
+/* Navbar dropdown cuenta */
 
 .account-dropdown {
     width: 270px;
@@ -673,10 +997,11 @@ body {
     margin-top: .6rem !important;
     padding: .5rem;
 
-    border: 1px solid #e8eaed;
-    border-radius: 1rem;
+    border: 1px solid var(--mb-border);
+    border-radius: var(--mb-radius);
 
-    box-shadow: 0 15px 40px rgba(20, 35, 52, .12);
+    box-shadow:
+        0 15px 40px rgba(20, 35, 52, .12);
 }
 
 .account-dropdown .dropdown-item {
@@ -693,6 +1018,7 @@ body {
     width: 20px;
 
     font-size: 1.2rem;
+
     text-align: center;
 }
 
@@ -702,7 +1028,7 @@ body {
 
 
 /* =========================================================
-   MENÚ SECUNDARIO
+   NAVBAR — MENÚ SECUNDARIO
 ========================================================= */
 
 .shop-navigation {
@@ -739,6 +1065,7 @@ body {
 
     font-size: .9rem;
     font-weight: 600;
+
     text-decoration: none;
 
     white-space: nowrap;
@@ -747,13 +1074,14 @@ body {
 }
 
 .shop-nav-link:hover {
-    color: #981223;
+    color: var(--mb-red);
 }
 
 .shop-nav-link::after {
     content: "";
 
     position: absolute;
+
     right: 0;
     bottom: 0;
     left: 0;
@@ -762,7 +1090,7 @@ body {
 
     border-radius: 3px 3px 0 0;
 
-    background: #981223;
+    background: var(--mb-red);
 
     transform: scaleX(0);
 
@@ -775,12 +1103,223 @@ body {
 }
 
 .shop-nav-link.active {
-    color: #142334;
+    color: var(--mb-navy);
 }
 
 
 /* =========================================================
-   RESPONSIVE
+   BADGES
+========================================================= */
+
+.badge.bg-primary {
+    background-color: var(--mb-navy) !important;
+}
+
+.badge.bg-danger {
+    background-color: var(--mb-red) !important;
+}
+
+
+/* =========================================================
+   DROPDOWNS
+========================================================= */
+
+.dropdown-menu {
+    border-color: var(--mb-border);
+
+    border-radius: var(--mb-radius);
+
+    box-shadow: var(--mb-shadow);
+}
+
+.dropdown-item {
+    transition:
+        background-color .2s ease,
+        color .2s ease;
+}
+
+.dropdown-item:hover,
+.dropdown-item:focus {
+    background-color: var(--mb-surface-soft);
+
+    color: var(--mb-navy);
+}
+
+
+/* =========================================================
+   TABLAS
+========================================================= */
+
+.table {
+    --bs-table-color: var(--mb-text);
+}
+
+.table > :not(caption) > * > * {
+    border-bottom-color: var(--mb-border);
+}
+
+
+/* =========================================================
+   ALERTAS
+========================================================= */
+
+.alert {
+    border-radius: var(--mb-radius);
+}
+
+
+/* =========================================================
+   PAGINACIÓN
+========================================================= */
+
+.pagination {
+    gap: .25rem;
+}
+
+.page-link {
+    border-color: var(--mb-border);
+
+    color: var(--mb-navy);
+}
+
+.page-link:hover {
+    border-color: var(--mb-border);
+
+    background: var(--mb-surface-soft);
+
+    color: var(--mb-red);
+}
+
+.active > .page-link,
+.page-link.active {
+    border-color: var(--mb-navy);
+
+    background: var(--mb-navy);
+
+    color: #fff;
+}
+
+
+/* =========================================================
+   UTILIDADES MR BULLS
+========================================================= */
+
+.mb-surface {
+    background: var(--mb-surface);
+}
+
+.mb-surface-soft {
+    background: var(--mb-surface-soft);
+}
+
+.mb-text-navy {
+    color: var(--mb-navy);
+}
+
+.mb-text-red {
+    color: var(--mb-red);
+}
+
+.mb-border {
+    border-color: var(--mb-border) !important;
+}
+
+.mb-shadow {
+    box-shadow: var(--mb-shadow);
+}
+
+
+/* =========================================================
+   RESPONSIVE — PEDIDOS
+========================================================= */
+
+@media (max-width: 767.98px) {
+
+    .order-progress {
+        grid-template-columns: 1fr;
+
+        gap: 1.25rem;
+    }
+
+    .order-progress::before {
+        top: 24px;
+        right: auto;
+        bottom: 24px;
+        left: 23px;
+
+        width: 2px;
+        height: auto;
+    }
+
+    .order-progress-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+
+        text-align: left;
+    }
+
+    .order-progress-icon {
+        flex: 0 0 48px;
+
+        margin: 0;
+    }
+
+}
+
+
+/* =========================================================
+   RESPONSIVE — HERO
+========================================================= */
+
+@media (max-width: 991.98px) {
+
+    .min-vh-hero {
+        min-height: auto;
+    }
+
+    .hero-title {
+        font-size: clamp(3rem, 12vw, 5rem);
+    }
+
+    .hero-visual {
+        min-height: auto;
+
+        padding-bottom: 4rem;
+    }
+
+    .hero-image-wrapper {
+        height: 480px;
+    }
+
+}
+
+
+@media (max-width: 575.98px) {
+
+    .hero-title {
+        font-size: 3.2rem;
+    }
+
+    .hero-description {
+        font-size: 1rem;
+    }
+
+    .hero-image-wrapper {
+        height: 390px;
+
+        border-radius: 1.5rem;
+    }
+
+    .hero-brand-line {
+        display: none;
+    }
+
+}
+
+
+/* =========================================================
+   RESPONSIVE — NAVBAR
 ========================================================= */
 
 @media (max-width: 767.98px) {
@@ -811,6 +1350,39 @@ body {
     .navbar-logo {
         max-width: 145px;
         height: 38px;
+    }
+
+}
+
+
+/* =========================================================
+   ACCESIBILIDAD / DETALLES
+========================================================= */
+
+button,
+a,
+input,
+select,
+textarea {
+    -webkit-tap-highlight-color: transparent;
+}
+
+::selection {
+    background: var(--mb-red);
+
+    color: #fff;
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+        scroll-behavior: auto !important;
+
+        transition-duration: .01ms !important;
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
     }
 
 }
