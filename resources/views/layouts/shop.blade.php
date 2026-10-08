@@ -1,44 +1,46 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
-    <meta charset="UTF-8">
 
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
+    <head>
+        <meta charset="UTF-8">
+        <link rel="shortcut icon" href="{{ asset('images/logo-corto-mrbulls.png') }}" type="image/x-icon">
 
-    <title>
-        @yield('title', 'Mr Bulls')
-    </title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    @vite([
-        'resources/assets/css/demo.css',
-        'resources/assets/vendor/fonts/iconify/iconify.css',
-        'resources/scss/app.scss',
-        'resources/css/shop/app.css',
-        'resources/js/shop/app.js',
-    ])
+        <title>
+            @yield('title', 'Mr Bulls')
+        </title>
 
-    @livewireStyles
+        @vite([
+            'resources/assets/css/demo.css',
+            'resources/assets/vendor/fonts/iconify/iconify.css',
+            'resources/scss/app.scss',
+            'resources/css/shop/app.css',
+            'resources/js/shop/app.js',
+        ])
 
-    @stack('styles')
-</head>
+        @livewireStyles
 
-<body>
+        @stack('styles')
+    </head>
 
-    <div class="d-flex flex-column min-vh-100">
+    <body>
 
-        <x-shop.navbar />
+        <div class="d-flex flex-column min-vh-100">
 
-        <main class="flex-grow-1">
-            @yield('content')
-        </main>
+            <x-shop.navbar />
 
-        <x-shop.footer />
+            <main class="flex-grow-1">
+                @yield('content')
+            </main>
 
-    </div>
+            <x-shop.footer />
 
-    @livewireScripts
-    @stack('scripts')
+        </div>
 
-</body>
+        @livewireScripts
+        @stack('scripts')
+
+    </body>
+
 </html>

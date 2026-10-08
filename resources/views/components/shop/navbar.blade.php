@@ -1,128 +1,205 @@
-<header class="bg-white border-bottom">
+<header class="shop-header bg-white">
 
-    <div class="container py-3">
-        <div class="d-flex align-items-center gap-4">
+    {{-- Navbar principal --}}
+    <div class="container">
+        <div class="d-flex align-items-center gap-3 gap-lg-4 py-3">
 
             {{-- Logo --}}
-            <a href="{{ route('home') }}" class="text-decoration-none text-dark">
-                <span class="fs-3 fw-bold">Mr Bulls</span>
+            <a href="{{ route('home') }}" class="navbar-brand flex-shrink-0 m-0" aria-label="Mr Bulls">
+                <img src="{{ asset('images/logo-mrbulls.png') }}" alt="Mr Bulls" class="navbar-logo">
             </a>
 
-            {{-- Buscador --}}
-            <div class="flex-grow-1 d-none d-md-block">
-                <div class="input-group">
-                    <span class="input-group-text bg-transparent">
-                        <i class="bx bx-search"></i>
-                    </span>
 
-                    <input type="search" class="form-control" placeholder="Buscar productos...">
+            {{-- Buscador desktop --}}
+            <div class="flex-grow-1 d-none d-md-block">
+                <div class="navbar-search">
+
+                    <i class="bx bx-search"></i>
+
+                    <input type="search" class="form-control" placeholder="¿Qué estás buscando?"
+                        aria-label="Buscar productos">
+
                 </div>
             </div>
 
-            {{-- Usuario --}}
-            @guest
 
-                <a href="{{ route('login') }}" class="btn btn-outline-primary">
-                    <i class="bx bx-user me-1"></i>
-                    Iniciar sesión
-                </a>
+            {{-- Acciones --}}
+            <div class="d-flex align-items-center gap-2 ms-auto">
 
-            @else
+                {{-- Usuario --}}
+                @guest
 
-                <div class="dropdown">
+                    <a href="{{ route('login') }}" class="navbar-action" title="Iniciar sesión">
+                        <i class="bx bx-user"></i>
 
-                    <button type="button" class="btn btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown">
-                        <i class="bx bx-user me-1"></i>
+                        <span class="d-none d-lg-inline">
+                            Ingresar
+                        </span>
+                    </a>
 
-                        {{ auth()->user()->name }}
-                    </button>
+                @else
 
+                    <div class="dropdown">
 
-                    <ul class="dropdown-menu dropdown-menu-end">
+                        <button type="button" class="navbar-action" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bx bx-user"></i>
 
-                        <li>
-
-                            <span class="dropdown-item-text">
-
-                                <small class="text-muted">
-                                    Sesión iniciada como
-                                </small>
-
-                                <div class="fw-semibold">
-                                    {{ auth()->user()->email }}
-                                </div>
-
+                            <span class="d-none d-lg-block text-start">
+                                <small>Hola,</small>
+                                <strong>
+                                    {{ Str::limit(auth()->user()->name, 15) }}
+                                </strong>
                             </span>
 
-                        </li>
+                            <i class="bx bx-chevron-down d-none d-lg-inline"></i>
+                        </button>
 
-                        <li>
-                            <hr class="dropdown-divider">
-                        </li>
 
-                        {{-- Lo activaremos después --}}
-                        <li>
+                        <ul class="dropdown-menu dropdown-menu-end account-dropdown">
 
-                            <a href="{{ route('account.orders') }}" class="dropdown-item">
-                                <i class="bx bx-package me-2"></i>
-                                Mis pedidos
-                            </a>
+                            {{-- Datos del usuario --}}
+                            <li>
+                                <div class="px-3 py-2">
 
-                        </li>
+                                    <small class="text-muted">
+                                        Sesión iniciada como
+                                    </small>
 
-                        <li>
-                            <hr class="dropdown-divider">
-                        </li>
+                                    <div class="fw-bold text-dark">
+                                        {{ auth()->user()->name }}
+                                    </div>
 
-                        <li>
+                                    <div class="small text-muted">
+                                        {{ auth()->user()->email }}
+                                    </div>
 
-                            <form method="POST" action="{{ route('logout') }}">
+                                </div>
+                            </li>
 
-                                @csrf
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
 
-                                <button type="submit" class="dropdown-item text-danger">
-                                    <i class="bx bx-log-out me-2"></i>
-                                    Cerrar sesión
-                                </button>
 
-                            </form>
+                            {{-- Perfil --}}
+                            <li>
+                                <a href="{{ route('account.profile') }}" class="dropdown-item">
+                                    <i class="bx bx-user-circle"></i>
 
-                        </li>
+                                    <span>
+                                        Mi perfil
+                                    </span>
+                                </a>
+                            </li>
 
-                    </ul>
 
+                            {{-- Pedidos --}}
+                            <li>
+                                <a href="{{ route('account.orders') }}" class="dropdown-item">
+                                    <i class="bx bx-package"></i>
+
+                                    <span>
+                                        Mis pedidos
+                                    </span>
+                                </a>
+                            </li>
+
+
+                            {{-- Direcciones --}}
+                            <li>
+                                <a href="{{ route('account.addresses') }}" class="dropdown-item">
+                                    <i class="bx bx-map"></i>
+
+                                    <span>
+                                        Mis direcciones
+                                    </span>
+                                </a>
+                            </li>
+
+
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+
+
+                            {{-- Logout --}}
+                            <li>
+
+                                <form method="POST" action="{{ route('logout') }}">
+                                    @csrf
+
+                                    <button type="submit" class="dropdown-item text-danger">
+                                        <i class="bx bx-log-out"></i>
+
+                                        <span>
+                                            Cerrar sesión
+                                        </span>
+                                    </button>
+
+                                </form>
+
+                            </li>
+
+                        </ul>
+
+                    </div>
+
+                @endguest
+
+
+                {{-- Carrito --}}
+                <div class="navbar-cart">
+                    <livewire:shop.cart-counter />
                 </div>
 
-            @endguest
-
-            {{-- Carrito --}}
-            <livewire:shop.cart-counter />
+            </div>
 
         </div>
+
+
+        {{-- Buscador móvil --}}
+        <div class="d-md-none pb-3">
+
+            <div class="navbar-search">
+
+                <i class="bx bx-search"></i>
+
+                <input type="search" class="form-control" placeholder="Buscar productos..."
+                    aria-label="Buscar productos">
+
+            </div>
+
+        </div>
+
     </div>
 
-    {{-- Menú secundario --}}
-    <nav class="border-top">
-        <div class="container">
-            <div class="d-flex gap-4 py-2">
 
-                <a href="#" class="text-decoration-none text-body">
+    {{-- Navegación --}}
+    <nav class="shop-navigation">
+        <div class="container">
+
+            <div class="shop-navigation-inner">
+
+                <a href="{{ route('home') }}" class="shop-nav-link
+                        {{ request()->routeIs('home') ? 'active' : '' }}">
                     Inicio
                 </a>
 
-                <a href="{{ route('products.index') }}" class="text-decoration-none text-body">
+                <a href="{{ route('products.index') }}" class="shop-nav-link
+                        {{ request()->routeIs('products.*') ? 'active' : '' }}">
                     Productos
                 </a>
 
-                <a href="#" class="text-decoration-none text-body">
+                <a href="#" class="shop-nav-link">
                     Categorías
                 </a>
 
-                <a href="#" class="text-decoration-none text-body">
+                <a href="#" class="shop-nav-link">
                     Ofertas
                 </a>
 
             </div>
+
         </div>
     </nav>
 

@@ -7,6 +7,7 @@ use App\Models\InventoryMovement;
 use App\Services\CartService;
 use App\Support\GuatemalaLocations;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 use Livewire\Component;
 use App\Models\Order;
 use App\Models\Product;
@@ -243,11 +244,19 @@ class Checkout extends Component
             'department' => [
                 'required',
                 'string',
+                Rule::in(array_keys(
+                    GuatemalaLocations::departments()
+                )),
             ],
 
             'municipality' => [
                 'required',
                 'string',
+                Rule::in(array_keys(
+                    GuatemalaLocations::municipalitiesFor(
+                        $this->department
+                    )
+                )),
             ],
 
             'address' => [

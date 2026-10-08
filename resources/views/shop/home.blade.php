@@ -5,43 +5,78 @@
 @section('content')
 
     {{-- HERO --}}
-    <section class="py-5">
+    {{-- HERO --}}
+    <section class="mr-bulls-hero">
         <div class="container">
 
-            <div class="row align-items-center g-5 py-lg-5">
+            <div class="row align-items-center min-vh-hero">
 
-                <div class="col-lg-6">
+                {{-- Contenido --}}
+                <div class="col-lg-6 position-relative z-2">
 
-                    <span class="text-uppercase fw-semibold text-primary">
-                        Mr Bulls
-                    </span>
+                    <div class="hero-content py-5">
 
-                    <h1 class="display-3 fw-bold mt-2 mb-3">
-                        Estilo que marca presencia.
-                    </h1>
+                        <span class="hero-eyebrow">
+                            MR BULLS
+                        </span>
 
-                    <p class="lead text-muted mb-4">
-                        Descubre nuestros productos y encuentra
-                        el estilo que te representa.
-                    </p>
+                        <h1 class="hero-title">
+                            Construye
+                            <span>tu legado.</span>
+                        </h1>
 
-                    <a href="#productos-destacados"
-                       class="btn btn-primary btn-lg px-4">
-                        Ver productos
-                    </a>
+                        <p class="hero-description">
+                            Diseños con carácter para quienes no pasan
+                            desapercibidos. Descubre la colección de Mr Bulls
+                            y encuentra el estilo que te representa.
+                        </p>
+
+                        <div class="d-flex flex-wrap gap-3 mt-4">
+
+                            <a href="#productos-destacados" class="btn hero-btn-primary btn-lg">
+                                Ver colección
+
+                                <i class="bx bx-right-arrow-alt ms-2"></i>
+                            </a>
+
+                            <a href="{{ route('products.index') }}" class="btn hero-btn-secondary btn-lg">
+                                Todos los productos
+                            </a>
+
+                        </div>
+
+                        {{-- Detalle de marca --}}
+                        <div class="hero-brand-line mt-5">
+
+                            <span></span>
+
+                            <small>
+                                ESTILO · CARÁCTER · LEGADO
+                            </small>
+
+                        </div>
+
+                    </div>
 
                 </div>
 
+
+                {{-- Imagen --}}
                 <div class="col-lg-6">
 
-                    <div class="hero-placeholder rounded-4">
-                        <div class="text-center">
-                            <i class="icon-base bx bx-image fs-1 mb-2"></i>
+                    <div class="hero-visual">
 
-                            <div>
-                                Banner principal
+                        <div class="hero-image-wrapper">
+
+                            <img src="{{ asset('images/hero-mrbulls.png') }}" alt="Colección Mr Bulls" class="hero-image">
+
+                            <div class="hero-image-badge">
+                                <strong>MR</strong>
+                                <span>BULLS</span>
                             </div>
+
                         </div>
+
                     </div>
 
                 </div>
@@ -49,8 +84,12 @@
             </div>
 
         </div>
-    </section>
 
+        {{-- Decoración --}}
+        <div class="hero-decoration hero-decoration-one"></div>
+        <div class="hero-decoration hero-decoration-two"></div>
+
+    </section>
 
     {{-- CATEGORÍAS --}}
     @if($categories->isNotEmpty())
@@ -59,7 +98,7 @@
             <div class="container">
 
                 <div class="d-flex justify-content-between
-                            align-items-end mb-4">
+                                            align-items-end mb-4">
 
                     <div>
                         <span class="text-primary fw-semibold">
@@ -81,15 +120,12 @@
                         <div class="col-6 col-md-4 col-lg-2">
 
                             <div class="card h-100 border-0 shadow-sm
-                                        category-card">
+                                                                category-card">
 
                                 @if($category->image)
 
-                                    <img
-                                        src="{{ asset('storage/' . $category->image) }}"
-                                        class="card-img-top category-image"
-                                        alt="{{ $category->name }}"
-                                    >
+                                    <img src="{{ asset('storage/' . $category->image) }}" class="card-img-top category-image"
+                                        alt="{{ $category->name }}">
 
                                 @else
 
@@ -122,10 +158,7 @@
 
 
     {{-- PRODUCTOS DESTACADOS --}}
-    <section
-        id="productos-destacados"
-        class="py-5"
-    >
+    <section id="productos-destacados" class="py-5">
 
         <div class="container">
 
@@ -151,17 +184,14 @@
                         <div class="col-6 col-md-4 col-lg-3">
 
                             <div class="card h-100 border-0 shadow-sm
-                                        product-card">
+                                                                product-card">
 
                                 <div class="position-relative">
 
                                     @if($product->main_image)
 
-                                        <img
-                                            src="{{ asset('storage/' . $product->main_image) }}"
-                                            class="card-img-top product-image"
-                                            alt="{{ $product->name }}"
-                                        >
+                                        <img src="{{ asset('storage/' . $product->main_image) }}" class="card-img-top product-image"
+                                            alt="{{ $product->name }}">
 
                                     @else
 
@@ -173,13 +203,13 @@
 
 
                                     @if(
-                                        $product->compare_price &&
-                                        $product->compare_price > $product->price
-                                    )
+                                            $product->compare_price &&
+                                            $product->compare_price > $product->price
+                                        )
 
                                         <span class="badge bg-danger
-                                                     position-absolute
-                                                     top-0 start-0 m-3">
+                                                                                     position-absolute
+                                                                                     top-0 start-0 m-3">
                                             Oferta
                                         </span>
 
@@ -194,12 +224,10 @@
                                         {{ $product->category->name }}
                                     </small>
 
-                                   <h5 class="card-title mt-1 mb-2">
+                                    <h5 class="card-title mt-1 mb-2">
 
-                                        <a
-                                            href="{{ route('products.show', $product) }}"
-                                            class="text-body text-decoration-none stretched-link"
-                                        >
+                                        <a href="{{ route('products.show', $product) }}"
+                                            class="text-body text-decoration-none stretched-link">
                                             {{ $product->name }}
                                         </a>
 
@@ -213,12 +241,12 @@
                                         </span>
 
                                         @if(
-                                            $product->compare_price &&
-                                            $product->compare_price > $product->price
-                                        )
+                                                $product->compare_price &&
+                                                $product->compare_price > $product->price
+                                            )
 
                                             <span class="text-muted
-                                                         text-decoration-line-through">
+                                                                                         text-decoration-line-through">
                                                 Q{{ number_format($product->compare_price, 2) }}
                                             </span>
 
