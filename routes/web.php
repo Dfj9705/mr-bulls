@@ -6,6 +6,12 @@ use App\Models\Order;
 use App\Models\Product;
 use Illuminate\Support\Facades\Route;
 
+/*
+|--------------------------------------------------------------------------
+| Tienda pública
+|--------------------------------------------------------------------------
+*/
+
 Route::get('/', function () {
 
     $categories = Category::query()
@@ -26,7 +32,15 @@ Route::get('/', function () {
         'categories',
         'featuredProducts'
     ));
+
 })->name('home');
+
+
+/*
+|--------------------------------------------------------------------------
+| Productos
+|--------------------------------------------------------------------------
+*/
 
 Route::view('/productos', 'shop.products.index')
     ->name('products.index');
@@ -40,9 +54,19 @@ Route::get('/productos/{product:slug}', function (Product $product) {
         'images',
     ]);
 
-    return view('shop.products.show', compact('product'));
+    return view(
+        'shop.products.show',
+        compact('product')
+    );
 
 })->name('products.show');
+
+
+/*
+|--------------------------------------------------------------------------
+| Carrito y checkout
+|--------------------------------------------------------------------------
+*/
 
 Route::view('/carrito', 'shop.cart.index')
     ->name('cart.index');
@@ -51,25 +75,53 @@ Route::view('/checkout', 'shop.checkout.index')
     ->name('checkout.index');
 
 
+/*
+|--------------------------------------------------------------------------
+| Autenticación
+|--------------------------------------------------------------------------
+*/
+
 Route::middleware('guest')->group(function () {
 
-    Route::get('/login', [AuthController::class, 'showLogin'])
-        ->name('login');
+    Route::get(
+        '/login',
+        [AuthController::class, 'showLogin']
+    )->name('login');
 
-    Route::post('/login', [AuthController::class, 'login'])
-        ->name('login.store');
+    Route::post(
+        '/login',
+        [AuthController::class, 'login']
+    )->name('login.store');
 
-    Route::get('/registro', [AuthController::class, 'showRegister'])
-        ->name('register');
+    Route::get(
+        '/registro',
+        [AuthController::class, 'showRegister']
+    )->name('register');
 
-    Route::post('/registro', [AuthController::class, 'register'])
-        ->name('register.store');
+    Route::post(
+        '/registro',
+        [AuthController::class, 'register']
+    )->name('register.store');
 
 });
 
-Route::post('/logout', [AuthController::class, 'logout'])
+Route::post(
+    '/logout',
+    [AuthController::class, 'logout']
+)
     ->middleware('auth')
     ->name('logout');
+
+
+/*
+|--------------------------------------------------------------------------
+| Consulta pública del pedido
+|--------------------------------------------------------------------------
+|
+| Esta ruta utiliza public_token para permitir consultar el pedido
+| después de una compra, incluso cuando fue realizada como invitado.
+|
+*/
 
 Route::get('/pedido/{token}/confirmado', function (string $token) {
 
@@ -89,30 +141,74 @@ Route::get('/pedido/{token}/confirmado', function (string $token) {
 })->name('orders.success');
 
 
-Route::view(
-    '/mi-cuenta/pedidos',
-    'shop.account.orders'
-)
-    ->middleware('auth')
-    ->name('account.orders');
+/*
+|--------------------------------------------------------------------------
+| Mi cuenta
+|--------------------------------------------------------------------------
+*/
 
-Route::get('/mi-cuenta/pedidos/{order}', function (Order $order) {
+Route::middleware('auth')->group(function () {
 
-    abort_unless(
-        $order->user_id === auth()->id(),
-        403
-    );
+    /*
+    |--------------------------------------------------------------------------
+    | Perfil
+    |--------------------------------------------------------------------------
+    */
 
-    $order->load([
-        'items',
-        'statusHistory',
-    ]);
+    Route::view(
+        '/mi-cuenta/perfil',
+        'shop.account.profile'
+    )->name('account.profile');
 
-    return view(
-        'shop.account.order-show',
-        compact('order')
-    );
 
-})
-    ->middleware('auth')
-    ->name('account.orders.show');
+    /*
+    |--------------------------------------------------------------------------
+    | Pedidos
+    |--------------------------------------------------------------------------
+    */
+
+    Route::view(
+        '/mi-cuenta/pedidos',
+        'shop.account.orders'
+    )->name('account.orders');
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Detalle de pedido
+    |--------------------------------------------------------------------------
+    |
+    | Además del middleware auth, verificamos que el pedido realmente
+    | pertenezca al usuario autenticado.
+    |
+    */
+
+    Route::get('/mi-cuenta/pedidos/{order}', function (Order $order) {
+
+        abort_unless(
+            $order->user_id === auth()->id(),
+            403
+        );
+
+        $order->load([
+            'items.product',
+            'statusHistory',
+        ]);
+
+        return view(
+            'shop.account.order-show',
+            compact('order')
+        );
+
+    })->name('account.orders.show');
+
+
+    /**
+     * Direcciones guardadas
+     */
+    Route::view(
+        '/mi-cuenta/direcciones',
+        'shop.account.addresses'
+    )->name('account.addresses');
+
+});
