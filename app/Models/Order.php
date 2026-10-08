@@ -42,6 +42,7 @@ class Order extends Model
         'payment_status',
         'payment_method',
         'payment_url',
+        'paid_at',
 
         'customer_notes',
         'admin_notes',
@@ -61,6 +62,7 @@ class Order extends Model
             'shipping_cost' => 'decimal:2',
             'total' => 'decimal:2',
             'stock_restored_at' => 'datetime',
+            'paid_at' => 'datetime',
         ];
     }
 
@@ -106,6 +108,19 @@ class Order extends Model
                     new PaymentLinkAvailable($order)
                 );
         });
+
+
+        static::updating(function (Order $order) {
+            if (!$order->isDirty('payment_status')) {
+                return;
+            }
+
+            if ($order->payment_status === self::PAYMENT_PAID) {
+                // Conserva la fecha original si ya existía.
+                $order->paid_at ??= now();
+            }
+        });
+
     }
 
     public function statusHistory(): HasMany
