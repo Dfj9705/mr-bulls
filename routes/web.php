@@ -95,3 +95,24 @@ Route::view(
 )
     ->middleware('auth')
     ->name('account.orders');
+
+Route::get('/mi-cuenta/pedidos/{order}', function (Order $order) {
+
+    abort_unless(
+        $order->user_id === auth()->id(),
+        403
+    );
+
+    $order->load([
+        'items',
+        'statusHistory',
+    ]);
+
+    return view(
+        'shop.account.order-show',
+        compact('order')
+    );
+
+})
+    ->middleware('auth')
+    ->name('account.orders.show');

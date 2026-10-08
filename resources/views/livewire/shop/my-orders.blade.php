@@ -117,9 +117,9 @@
                                         <td class="text-end">
 
                                             <a
-                                                href="{{ route('orders.success', [
-                                                    'token' => $order->public_token
-                                                ]) }}"
+                                               href="{{ route('account.orders.show', [
+    'order' => $order
+]) }}"
                                                 class="btn btn-sm btn-outline-primary"
                                             >
                                                 Ver pedido
