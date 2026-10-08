@@ -21,6 +21,7 @@ class Product extends Model
         'main_image',
         'is_active',
         'is_featured',
+        'minimum_stock',
     ];
 
     protected $casts = [
@@ -29,6 +30,7 @@ class Product extends Model
         'stock' => 'integer',
         'is_active' => 'boolean',
         'is_featured' => 'boolean',
+        'minimum_stock' => 'integer',
     ];
 
     public function category(): BelongsTo
