@@ -10,16 +10,17 @@
             </a>
 
 
+
             {{-- Buscador desktop --}}
             <div class="flex-grow-1 d-none d-md-block">
-                <div class="navbar-search">
+                <form action="{{ route('products.index') }}" method="GET">
+                    <div class="navbar-search">
+                        <i class="bx bx-search"></i>
 
-                    <i class="bx bx-search"></i>
-
-                    <input type="search" class="form-control" placeholder="¿Qué estás buscando?"
-                        aria-label="Buscar productos">
-
-                </div>
+                        <input type="search" name="search" class="form-control" placeholder="¿Qué estás buscando?"
+                            aria-label="Buscar productos" value="{{ request('search', '') }}">
+                    </div>
+                </form>
             </div>
 
 
@@ -190,12 +191,8 @@
                     Productos
                 </a>
 
-                <a href="#" class="shop-nav-link">
+                <a href="{{ route('products.index') }}#categorias" class="shop-nav-link">
                     Categorías
-                </a>
-
-                <a href="#" class="shop-nav-link">
-                    Ofertas
                 </a>
 
             </div>

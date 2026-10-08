@@ -20,6 +20,30 @@
 
         <div class="container">
 
+
+            {{-- CATEGORÍAS --}}
+            <div id="categorias" class="mb-5">
+                <h4 class="fw-bold mb-3">
+                    Explora por categoría
+                </h4>
+
+                <div class="d-flex flex-wrap gap-2">
+                    <button type="button" wire:click="$set('category', null)"
+                        class="btn {{ !$category ? 'btn-primary' : 'btn-outline-secondary' }}">
+                        Todas
+                    </button>
+
+                    @foreach($categories as $categoryItem)
+                        <button type="button" wire:key="category-filter-{{ $categoryItem->id }}"
+                            wire:click="$set('category', {{ $categoryItem->id }})"
+                            class="btn {{ $category == $categoryItem->id ? 'btn-primary' : 'btn-outline-secondary' }}">
+                            {{ $categoryItem->name }}
+                        </button>
+                    @endforeach
+                </div>
+            </div>
+
+
             {{-- FILTROS --}}
             <div class="card border-0 shadow-sm mb-4">
 
@@ -40,12 +64,8 @@
                                     <i class="bx bx-search"></i>
                                 </span>
 
-                                <input
-                                    type="text"
-                                    class="form-control"
-                                    placeholder="Buscar productos..."
-                                    wire:model.live.debounce.400ms="search"
-                                >
+                                <input type="text" class="form-control" placeholder="Buscar productos..."
+                                    wire:model.live.debounce.400ms="search">
 
                             </div>
 
@@ -59,10 +79,7 @@
                                 Categoría
                             </label>
 
-                            <select
-                                class="form-select"
-                                wire:model.live="category"
-                            >
+                            <select class="form-select" wire:model.live="category">
 
                                 <option value="">
                                     Todas
@@ -88,10 +105,7 @@
                                 Ordenar
                             </label>
 
-                            <select
-                                class="form-select"
-                                wire:model.live="sort"
-                            >
+                            <select class="form-select" wire:model.live="sort">
 
                                 <option value="latest">
                                     Más recientes
@@ -117,12 +131,8 @@
                         {{-- LIMPIAR --}}
                         <div class="col-lg-1">
 
-                            <button
-                                type="button"
-                                class="btn btn-outline-secondary w-100"
-                                wire:click="clearFilters"
-                                title="Limpiar filtros"
-                            >
+                            <button type="button" class="btn btn-outline-secondary w-100" wire:click="clearFilters"
+                                title="Limpiar filtros">
                                 <i class="bx bx-reset"></i>
                             </button>
 
@@ -144,16 +154,12 @@
                     {{ $products->total() }}
 
                     {{ $products->total() === 1
-                        ? 'producto'
-                        : 'productos' }}
+    ? 'producto'
+    : 'productos' }}
 
                 </span>
 
-                <div
-                    wire:loading
-                    wire:target="search,category,sort"
-                    class="text-primary"
-                >
+                <div wire:loading wire:target="search,category,sort" class="text-primary">
                     Buscando...
                 </div>
 
@@ -161,10 +167,7 @@
 
 
             {{-- PRODUCTOS --}}
-            <div
-                wire:loading.class="opacity-50"
-                wire:target="search,category,sort"
-            >
+            <div wire:loading.class="opacity-50" wire:target="search,category,sort">
 
                 @if($products->count())
 
@@ -172,134 +175,123 @@
 
                         @foreach($products as $product)
 
-                            <div
-                                class="col-12 col-md-4 col-lg-3"
-                                wire:key="product-{{ $product->id }}"
-                            >
+                                        <div class="col-12 col-md-4 col-lg-3" wire:key="product-{{ $product->id }}">
 
-                                <div class="card h-100 border-0 shadow-sm product-card">
+                                            <div class="card h-100 border-0 shadow-sm product-card">
 
-                                    <div class="position-relative">
+                                                <div class="position-relative">
 
-                                        @if($product->main_image)
+                                                    @if($product->main_image)
 
-                                            <img
-                                                src="{{ asset('storage/' . $product->main_image) }}"
-                                                class="card-img-top product-image"
-                                                alt="{{ $product->name }}"
-                                            >
+                                                        <img src="{{ asset('storage/' . $product->main_image) }}"
+                                                            class="card-img-top product-image" alt="{{ $product->name }}">
 
-                                        @else
+                                                    @else
 
-                                            <div class="product-image-placeholder">
+                                                        <div class="product-image-placeholder">
 
-                                                <i class="bx bx-image fs-1"></i>
+                                                            <i class="bx bx-image fs-1"></i>
+
+                                                        </div>
+
+                                                    @endif
+
+
+                                                    @if(
+                                                            $product->compare_price &&
+                                                            $product->compare_price > $product->price
+                                                        )
+
+                                                        <span class="badge bg-danger
+                                                                                                       position-absolute
+                                                                                                       top-0 start-0 m-3">
+                                                            Oferta
+                                                        </span>
+
+                                                    @endif
+
+                                                </div>
+
+
+                                                <div class="card-body">
+
+                                                    <small class="text-muted">
+                                                        {{ $product->category->name }}
+                                                    </small>
+
+                                                    <h5 class="card-title mt-1 mb-2">
+
+                                                        <a href="{{ route('products.show', $product) }}"
+                                                            class="text-body text-decoration-none stretched-link">
+                                                            {{ $product->name }}
+                                                        </a>
+
+                                                    </h5>
+
+
+                                                    <div class="d-flex flex-wrap
+                                                                                            align-items-center gap-2">
+
+                                                        <span class="fw-bold fs-5">
+
+                                                            Q{{ number_format(
+                                $product->price,
+                                2
+                            ) }}
+
+                                                        </span>
+
+
+                                                        @if(
+                                                                                        $product->compare_price &&
+                                                                                        $product->compare_price >
+                                                                                        $product->price
+                                                                                    )
+
+                                                                                    <span
+                                                                                        class="text-muted
+                                                                                                                                                           text-decoration-line-through">
+                                                                                        Q{{ number_format(
+                                                                $product->compare_price,
+                                                                2
+                                                            ) }}
+                                                                                    </span>
+
+                                                        @endif
+
+                                                    </div>
+
+
+                                                    <div class="mt-2">
+
+                                                        @if($product->stock <= 0)
+
+                                                            <small class="text-danger fw-semibold">
+                                                                Agotado
+                                                            </small>
+
+                                                        @elseif($product->stock <= 5)
+
+                                                            <small class="text-warning fw-semibold">
+                                                                Últimas {{ $product->stock }}
+                                                                unidades
+                                                            </small>
+
+                                                        @else
+
+                                                            <small class="text-success">
+                                                                Disponible
+                                                            </small>
+
+                                                        @endif
+
+                                                    </div>
+
+                                                </div>
 
                                             </div>
 
-                                        @endif
-
-
-                                        @if(
-                                            $product->compare_price &&
-                                            $product->compare_price > $product->price
-                                        )
-
-                                            <span
-                                                class="badge bg-danger
-                                                       position-absolute
-                                                       top-0 start-0 m-3"
-                                            >
-                                                Oferta
-                                            </span>
-
-                                        @endif
-
-                                    </div>
-
-
-                                    <div class="card-body">
-
-                                        <small class="text-muted">
-                                            {{ $product->category->name }}
-                                        </small>
-
-                                        <h5 class="card-title mt-1 mb-2">
-
-                                            <a
-                                                href="{{ route('products.show', $product) }}"
-                                                class="text-body text-decoration-none stretched-link"
-                                            >
-                                                {{ $product->name }}
-                                            </a>
-
-                                        </h5>
-
-
-                                        <div class="d-flex flex-wrap
-                                                    align-items-center gap-2">
-
-                                            <span class="fw-bold fs-5">
-
-                                                Q{{ number_format(
-                                                    $product->price,
-                                                    2
-                                                ) }}
-
-                                            </span>
-
-
-                                            @if(
-                                                $product->compare_price &&
-                                                $product->compare_price >
-                                                $product->price
-                                            )
-
-                                                <span
-                                                    class="text-muted
-                                                           text-decoration-line-through"
-                                                >
-                                                    Q{{ number_format(
-                                                        $product->compare_price,
-                                                        2
-                                                    ) }}
-                                                </span>
-
-                                            @endif
-
                                         </div>
-
-
-                                        <div class="mt-2">
-
-                                            @if($product->stock <= 0)
-
-                                                <small class="text-danger fw-semibold">
-                                                    Agotado
-                                                </small>
-
-                                            @elseif($product->stock <= 5)
-
-                                                <small class="text-warning fw-semibold">
-                                                    Últimas {{ $product->stock }}
-                                                    unidades
-                                                </small>
-
-                                            @else
-
-                                                <small class="text-success">
-                                                    Disponible
-                                                </small>
-
-                                            @endif
-
-                                        </div>
-
-                                    </div>
-
-                                </div>
-
-                            </div>
 
                         @endforeach
 
@@ -327,11 +319,7 @@
                             Intenta cambiar los filtros de búsqueda.
                         </p>
 
-                        <button
-                            type="button"
-                            wire:click="clearFilters"
-                            class="btn btn-outline-primary"
-                        >
+                        <button type="button" wire:click="clearFilters" class="btn btn-outline-primary">
                             Limpiar filtros
                         </button>
 

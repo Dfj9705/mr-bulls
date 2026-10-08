@@ -98,7 +98,7 @@
             <div class="container">
 
                 <div class="d-flex justify-content-between
-                                                    align-items-end mb-4">
+                                                            align-items-end mb-4">
 
                     <div>
                         <span class="text-primary fw-semibold">
@@ -119,8 +119,8 @@
 
                         <div class="col-6 col-md-4 col-lg-2">
 
-                            <div class="card h-100 border-0 shadow-sm
-                                                                            category-card">
+                            <a href="{{ route('products.index', ['category' => $category->id]) }}"
+                                class="card h-100 border-0 shadow-sm category-card text-decoration-none text-body">
 
                                 @if($category->image)
 
@@ -143,7 +143,7 @@
 
                                 </div>
 
-                            </div>
+                            </a>
 
                         </div>
 
@@ -184,7 +184,7 @@
                         <div class="col-6 col-md-4 col-lg-3">
 
                             <div class="card h-100 border-0 shadow-sm
-                                                                            product-card">
+                                                                                        product-card">
 
                                 <div class="position-relative">
 
@@ -207,9 +207,10 @@
                                             $product->compare_price > $product->price
                                         )
 
-                                        <span class="badge bg-danger
-                                                                                                     position-absolute
-                                                                                                     top-0 start-0 m-3">
+                                        <span
+                                            class="badge bg-danger
+                                                                                                                     position-absolute
+                                                                                                                     top-0 start-0 m-3">
                                             Oferta
                                         </span>
 
@@ -245,8 +246,9 @@
                                                 $product->compare_price > $product->price
                                             )
 
-                                            <span class="text-muted
-                                                                                                         text-decoration-line-through">
+                                            <span
+                                                class="text-muted
+                                                                                                                         text-decoration-line-through">
                                                 Q{{ number_format($product->compare_price, 2) }}
                                             </span>
 
