@@ -54,6 +54,10 @@ class RolesAndPermissionsSeeder extends Seeder
 
             'inventario.ver',
             'inventario.ajustar',
+
+            'comentarios.ver',
+            'comentarios.moderar',
+            'comentarios.eliminar',
         ];
 
         foreach ($permissions as $permission) {

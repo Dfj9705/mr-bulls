@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
-
+use Illuminate\Auth\Events\Registered;
 class AuthController extends Controller
 {
     public function showLogin()
@@ -84,11 +84,13 @@ class AuthController extends Controller
 
         $user->assignRole('Cliente');
 
+        event(new Registered($user));
+
         Auth::login($user);
 
         $request->session()->regenerate();
 
-        return redirect()->route('home');
+        return redirect()->route('verification.notice');
     }
 
     public function logout(Request $request)

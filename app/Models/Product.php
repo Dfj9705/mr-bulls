@@ -53,4 +53,22 @@ class Product extends Model
     {
         return $this->hasMany(InventoryMovement::class);
     }
+
+
+    public function likes(): HasMany
+    {
+        return $this->hasMany(ProductLike::class);
+    }
+
+    public function comments(): HasMany
+    {
+        return $this->hasMany(ProductComment::class);
+    }
+
+    public function approvedComments(): HasMany
+    {
+        return $this->hasMany(ProductComment::class)
+            ->where('status', ProductComment::STATUS_APPROVED);
+    }
+
 }

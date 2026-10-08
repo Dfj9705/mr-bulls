@@ -5,6 +5,8 @@ use App\Models\Category;
 use App\Models\Order;
 use App\Models\Product;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use Illuminate\Http\Request;
 
 /*
 |--------------------------------------------------------------------------
@@ -104,6 +106,52 @@ Route::middleware('guest')->group(function () {
     )->name('register.store');
 
 });
+
+
+/*
+|--------------------------------------------------------------------------
+| Verificación de correo electrónico
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware('auth')->group(function () {
+
+    Route::get('/email/verificar', function () {
+        if (auth()->user()->hasVerifiedEmail()) {
+            return redirect()->route('home');
+        }
+
+        return view('shop.auth.verify-email');
+    })->name('verification.notice');
+
+    Route::get('/email/verificar/{id}/{hash}', function (EmailVerificationRequest $request) {
+        $request->fulfill();
+
+        return redirect()
+            ->route('home')
+            ->with(
+                'success',
+                'Tu correo electrónico ha sido verificado correctamente.'
+            );
+    })->middleware('signed')
+        ->name('verification.verify');
+
+    Route::post('/email/verificacion/reenviar', function (Request $request) {
+        if ($request->user()->hasVerifiedEmail()) {
+            return redirect()->route('home');
+        }
+
+        $request->user()->sendEmailVerificationNotification();
+
+        return back()->with(
+            'success',
+            'Te enviamos un nuevo enlace de verificación.'
+        );
+    })->middleware('throttle:6,1')
+        ->name('verification.send');
+
+});
+
 
 Route::post(
     '/logout',

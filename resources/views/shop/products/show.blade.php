@@ -18,27 +18,18 @@
                 <ol class="breadcrumb">
 
                     <li class="breadcrumb-item">
-                        <a
-                            href="{{ route('home') }}"
-                            class="text-decoration-none"
-                        >
+                        <a href="{{ route('home') }}" class="text-decoration-none">
                             Inicio
                         </a>
                     </li>
 
                     <li class="breadcrumb-item">
-                        <a
-                            href="{{ route('products.index') }}"
-                            class="text-decoration-none"
-                        >
+                        <a href="{{ route('products.index') }}" class="text-decoration-none">
                             Productos
                         </a>
                     </li>
 
-                    <li
-                        class="breadcrumb-item active"
-                        aria-current="page"
-                    >
+                    <li class="breadcrumb-item active" aria-current="page">
                         {{ $product->name }}
                     </li>
 
@@ -56,12 +47,8 @@
 
                         @if($product->main_image)
 
-                            <img
-                                id="mainProductImage"
-                                src="{{ asset('storage/' . $product->main_image) }}"
-                                alt="{{ $product->name }}"
-                                class="img-fluid"
-                            >
+                            <img id="mainProductImage" src="{{ asset('storage/' . $product->main_image) }}"
+                                alt="{{ $product->name }}" class="img-fluid">
 
                         @else
 
@@ -81,15 +68,9 @@
 
                             @if($product->main_image)
 
-                                <button
-                                    type="button"
-                                    class="product-thumbnail active"
-                                    data-image="{{ asset('storage/' . $product->main_image) }}"
-                                >
-                                    <img
-                                        src="{{ asset('storage/' . $product->main_image) }}"
-                                        alt="{{ $product->name }}"
-                                    >
+                                <button type="button" class="product-thumbnail active"
+                                    data-image="{{ asset('storage/' . $product->main_image) }}">
+                                    <img src="{{ asset('storage/' . $product->main_image) }}" alt="{{ $product->name }}">
                                 </button>
 
                             @endif
@@ -97,15 +78,9 @@
 
                             @foreach($product->images as $image)
 
-                                <button
-                                    type="button"
-                                    class="product-thumbnail"
-                                    data-image="{{ asset('storage/' . $image->image) }}"
-                                >
-                                    <img
-                                        src="{{ asset('storage/' . $image->image) }}"
-                                        alt="{{ $product->name }}"
-                                    >
+                                <button type="button" class="product-thumbnail"
+                                    data-image="{{ asset('storage/' . $image->image) }}">
+                                    <img src="{{ asset('storage/' . $image->image) }}" alt="{{ $product->name }}">
                                 </button>
 
                             @endforeach
@@ -144,19 +119,17 @@
 
 
                         @if(
-                            $product->compare_price &&
-                            $product->compare_price > $product->price
-                        )
+                                                $product->compare_price &&
+                                                $product->compare_price > $product->price
+                                            )
 
-                            <span
-                                class="fs-4 text-muted
-                                       text-decoration-line-through"
-                            >
-                                Q{{ number_format(
-                                    $product->compare_price,
-                                    2
-                                ) }}
-                            </span>
+                                            <span class="fs-4 text-muted
+                                                                                       text-decoration-line-through">
+                                                Q{{ number_format(
+                                $product->compare_price,
+                                2
+                            ) }}
+                                            </span>
 
                         @endif
 
@@ -209,11 +182,7 @@
 
                     @else
 
-                        <button
-                            type="button"
-                            class="btn btn-secondary btn-lg w-100"
-                            disabled
-                        >
+                        <button type="button" class="btn btn-secondary btn-lg w-100" disabled>
                             Producto agotado
                         </button>
 
@@ -245,6 +214,8 @@
 
             @endif
 
+            <livewire:product-interactions :product="$product" :key="'product-interactions-' . $product->id" />
+
         </div>
     </section>
 
@@ -253,80 +224,80 @@
 
 @push('scripts')
 
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
 
-        /*
-         * Galería
-         */
-        const mainImage = document.getElementById('mainProductImage');
-        const thumbnails = document.querySelectorAll('.product-thumbnail');
+            /*
+             * Galería
+             */
+            const mainImage = document.getElementById('mainProductImage');
+            const thumbnails = document.querySelectorAll('.product-thumbnail');
 
-        thumbnails.forEach((thumbnail) => {
+            thumbnails.forEach((thumbnail) => {
 
-            thumbnail.addEventListener('click', () => {
+                thumbnail.addEventListener('click', () => {
 
-                if (!mainImage) {
-                    return;
-                }
+                    if (!mainImage) {
+                        return;
+                    }
 
-                mainImage.src = thumbnail.dataset.image;
+                    mainImage.src = thumbnail.dataset.image;
 
-                thumbnails.forEach((item) => {
-                    item.classList.remove('active');
+                    thumbnails.forEach((item) => {
+                        item.classList.remove('active');
+                    });
+
+                    thumbnail.classList.add('active');
                 });
 
-                thumbnail.classList.add('active');
+            });
+
+
+            /*
+             * Cantidad
+             */
+            const quantity = document.getElementById('quantity');
+            const increase = document.getElementById('increaseQuantity');
+            const decrease = document.getElementById('decreaseQuantity');
+
+            if (!quantity) {
+                return;
+            }
+
+            increase?.addEventListener('click', () => {
+
+                const current = parseInt(quantity.value) || 1;
+                const max = parseInt(quantity.max);
+
+                if (current < max) {
+                    quantity.value = current + 1;
+                }
+
+            });
+
+            decrease?.addEventListener('click', () => {
+
+                const current = parseInt(quantity.value) || 1;
+
+                if (current > 1) {
+                    quantity.value = current - 1;
+                }
+
+            });
+
+            quantity.addEventListener('change', () => {
+
+                let value = parseInt(quantity.value) || 1;
+                const max = parseInt(quantity.max);
+
+                value = Math.max(1, value);
+                value = Math.min(value, max);
+
+                quantity.value = value;
+
             });
 
         });
-
-
-        /*
-         * Cantidad
-         */
-        const quantity = document.getElementById('quantity');
-        const increase = document.getElementById('increaseQuantity');
-        const decrease = document.getElementById('decreaseQuantity');
-
-        if (!quantity) {
-            return;
-        }
-
-        increase?.addEventListener('click', () => {
-
-            const current = parseInt(quantity.value) || 1;
-            const max = parseInt(quantity.max);
-
-            if (current < max) {
-                quantity.value = current + 1;
-            }
-
-        });
-
-        decrease?.addEventListener('click', () => {
-
-            const current = parseInt(quantity.value) || 1;
-
-            if (current > 1) {
-                quantity.value = current - 1;
-            }
-
-        });
-
-        quantity.addEventListener('change', () => {
-
-            let value = parseInt(quantity.value) || 1;
-            const max = parseInt(quantity.max);
-
-            value = Math.max(1, value);
-            value = Math.min(value, max);
-
-            quantity.value = value;
-
-        });
-
-    });
-</script>
+    </script>
 
 @endpush
