@@ -72,6 +72,38 @@
             Generado: {{ $generatedAt->format('d/m/Y H:i') }}
         </div>
 
+        <div style="margin-bottom: 12px; font-size: 9px;">
+            <strong>Período:</strong>
+            {{ !empty($filters['date_from'])
+    ? \Carbon\Carbon::parse($filters['date_from'])->format('d/m/Y')
+    : 'Inicio' }}
+            al
+            {{ !empty($filters['date_to'])
+    ? \Carbon\Carbon::parse($filters['date_to'])->format('d/m/Y')
+    : 'Actualidad' }}
+
+            |
+            <strong>Estado:</strong>
+            {{ match ($filters['status'] ?? null) {
+    'pending' => 'Pendiente',
+    'processing' => 'Procesando',
+    'shipped' => 'Enviado',
+    'completed' => 'Completado',
+    'cancelled' => 'Cancelado',
+    default => 'Todos'
+} }}
+
+            |
+            <strong>Pago:</strong>
+            {{ match ($filters['payment_status'] ?? null) {
+    'pending' => 'Pendiente',
+    'paid' => 'Pagado',
+    'failed' => 'Fallido',
+    'cancelled' => 'Cancelado',
+    default => 'Todos'
+} }}
+        </div>
+
         <table class="summary">
             <tr>
                 <td>

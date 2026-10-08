@@ -8,19 +8,35 @@ use Illuminate\Database\Eloquent\Builder;
 
 class OrderReportService
 {
-    public function generatePdf(?Builder $query = null): string
+
+    public function __construct(
+        protected array $filters = []
+    ) {
+    }
+
+    public function query(): Builder
     {
-        $orders = ($query ?? Order::query())
+        return OrderReportQuery::build($this->filters)
             ->orderByDesc('created_at')
+            ->orderByDesc('id');
+    }
+
+
+    public function generatePdf(array $filters = []): string
+    {
+        $orders = OrderReportQuery::build($filters)
+            ->orderByDesc('created_at')
+            ->orderByDesc('id')
             ->get();
 
         $html = view('reports.orders', [
             'orders' => $orders,
+            'filters' => $filters,
             'generatedAt' => now(),
             'totalOrders' => $orders->count(),
             'totalAmount' => $orders
-                ->where('payment_status', 'paid')
-                ->where('status', '!=', 'cancelled')
+                ->where('payment_status', Order::PAYMENT_PAID)
+                ->where('status', '!=', Order::STATUS_CANCELLED)
                 ->sum('total'),
         ])->render();
 
@@ -44,12 +60,13 @@ class OrderReportService
 
         $mpdf->SetHTMLFooter(
             '<div style="text-align:right;font-size:9px;">
-                Página {PAGENO} de {nbpg}
-            </div>'
+            Página {PAGENO} de {nbpg}
+        </div>'
         );
 
         $mpdf->WriteHTML($html);
 
         return $mpdf->Output('', 'S');
     }
+
 }

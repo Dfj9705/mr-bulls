@@ -3,6 +3,7 @@
 namespace App\Exports;
 
 use App\Models\Order;
+use App\Services\Reports\OrderReportQuery;
 use Illuminate\Database\Eloquent\Builder;
 use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\WithHeadings;
@@ -19,39 +20,16 @@ class OrdersExport implements
     ShouldAutoSize
 {
     public function __construct(
-        protected ?string $dateFrom = null,
-        protected ?string $dateTo = null,
-        protected ?string $status = null,
-        protected ?string $paymentStatus = null,
+        protected array $filters = []
     ) {
     }
 
     public function query(): Builder
     {
-        return Order::query()
-            ->when(
-                $this->dateFrom,
-                fn($query) =>
-                    $query->whereDate('created_at', '>=', $this->dateFrom)
-            )
-            ->when(
-                $this->dateTo,
-                fn($query) =>
-                    $query->whereDate('created_at', '<=', $this->dateTo)
-            )
-            ->when(
-                $this->status,
-                fn($query) =>
-                    $query->where('status', $this->status)
-            )
-            ->when(
-                $this->paymentStatus,
-                fn($query) =>
-                    $query->where('payment_status', $this->paymentStatus)
-            )
-            ->orderByDesc('created_at');
+        return OrderReportQuery::build($this->filters)
+            ->orderByDesc('created_at')
+            ->orderByDesc('id');
     }
-
     public function headings(): array
     {
         return [
