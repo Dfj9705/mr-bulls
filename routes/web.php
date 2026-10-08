@@ -195,7 +195,7 @@ Route::get('/pedido/{token}/confirmado', function (string $token) {
 |--------------------------------------------------------------------------
 */
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'verified'])->group(function () {
 
     /*
     |--------------------------------------------------------------------------
