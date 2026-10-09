@@ -8,32 +8,16 @@
                 Cantidad
             </label>
 
-            <div
-                class="input-group"
-                style="max-width: 150px;"
-            >
+            <div class="input-group" style="max-width: 150px;">
 
-                <button
-                    type="button"
-                    class="btn btn-outline-secondary"
-                    wire:click="decrease"
-                >
+                <button type="button" class="btn btn-outline-secondary" wire:click="decrease">
                     −
                 </button>
 
-                <input
-                    type="number"
-                    class="form-control text-center"
-                    wire:model.blur="quantity"
-                    min="1"
-                    max="{{ $product->stock }}"
-                >
+                <input type="number" class="form-control text-center" readonly wire:model.blur="quantity" min="1"
+                    max="{{ $product->stock }}">
 
-                <button
-                    type="button"
-                    class="btn btn-outline-secondary"
-                    wire:click="increase"
-                >
+                <button type="button" class="btn btn-outline-secondary" wire:click="increase">
                     +
                 </button>
 
@@ -42,13 +26,8 @@
         </div>
 
 
-        <button
-            type="button"
-            class="btn btn-primary btn-lg w-100"
-            wire:click="add"
-            wire:loading.attr="disabled"
-            wire:target="add"
-        >
+        <button type="button" class="btn btn-primary btn-lg w-100" wire:click="add" wire:loading.attr="disabled"
+            wire:target="add">
 
             <span wire:loading.remove wire:target="add">
                 <i class="bx bx-cart me-2"></i>
@@ -63,11 +42,7 @@
 
     @else
 
-        <button
-            type="button"
-            class="btn btn-secondary btn-lg w-100"
-            disabled
-        >
+        <button type="button" class="btn btn-secondary btn-lg w-100" disabled>
             Producto agotado
         </button>
 
