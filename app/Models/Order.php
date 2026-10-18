@@ -7,7 +7,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use App\Mail\PaymentLinkAvailable;
 use Illuminate\Support\Facades\Mail;
-
+use App\Services\WalletService;
+use Illuminate\Support\Facades\DB;
 class Order extends Model
 {
     public const STATUS_PENDING = 'pending';
@@ -120,6 +121,24 @@ class Order extends Model
                 $order->paid_at ??= now();
             }
         });
+
+
+        static::updated(function (Order $order) {
+
+            if (!$order->wasChanged('payment_status')) {
+                return;
+            }
+
+            if ($order->payment_status !== self::PAYMENT_PAID) {
+                return;
+            }
+
+            DB::afterCommit(function () use ($order) {
+                app(WalletService::class)->creditPurchase($order);
+            });
+
+        });
+
 
     }
 
