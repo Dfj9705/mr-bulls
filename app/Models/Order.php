@@ -133,4 +133,9 @@ class Order extends Model
     {
         return $this->hasMany(InventoryMovement::class);
     }
+
+    public function walletTransactions(): HasMany
+    {
+        return $this->hasMany(WalletTransaction::class);
+    }
 }
