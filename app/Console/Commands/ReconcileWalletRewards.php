@@ -18,11 +18,45 @@ class ReconcileWalletRewards extends Command
 
     public function handle(WalletService $walletService): int
     {
+
+
+        if (!config('loyalty.enabled', false)) {
+            $this->warn(
+                'El programa de lealtad está desactivado. '
+                . 'No se procesaron recompensas.'
+            );
+
+            return self::SUCCESS;
+        }
+
+        $startDate = config('loyalty.start_date');
+
+        if (app()->environment('production') && !$startDate) {
+            $this->warn(
+                'No se ha configurado la fecha oficial de lanzamiento. '
+                . 'No se procesaron recompensas.'
+            );
+
+            return self::SUCCESS;
+        }
+
         $processed = 0;
         $credited = 0;
         $failed = 0;
 
         Order::query()
+
+            ->when($startDate, function ($query) use ($startDate) {
+                $query->where(
+                    'created_at',
+                    '>=',
+                    \Carbon\Carbon::parse(
+                        $startDate,
+                        config('app.timezone')
+                    )->startOfDay()
+                );
+            })
+
             ->where('payment_status', Order::PAYMENT_PAID)
             ->where('status', '!=', Order::STATUS_CANCELLED)
             ->whereNotNull('user_id')

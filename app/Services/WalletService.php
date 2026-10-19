@@ -28,6 +28,31 @@ class WalletService
                 ->lockForUpdate()
                 ->findOrFail($order->id);
 
+            // El programa debe estar habilitado.
+            if (!config('loyalty.enabled', false)) {
+                return null;
+            }
+
+            $startDate = config('loyalty.start_date');
+
+            // En producción exigimos una fecha oficial de lanzamiento.
+            if (app()->environment('production') && !$startDate) {
+                return null;
+            }
+
+            // Si existe fecha, solo participan pedidos creados
+// a partir del inicio del programa.
+            if ($startDate) {
+                $startsAt = \Carbon\Carbon::parse(
+                    $startDate,
+                    config('app.timezone')
+                )->startOfDay();
+
+                if ($order->created_at->lt($startsAt)) {
+                    return null;
+                }
+            }
+
             if (
                 $order->payment_status !== Order::PAYMENT_PAID ||
                 $order->status === Order::STATUS_CANCELLED ||
