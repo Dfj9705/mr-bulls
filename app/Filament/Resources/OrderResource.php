@@ -117,6 +117,11 @@ class OrderResource extends Resource
                             ->prefix('Q')
                             ->disabled(),
 
+                        Forms\Components\TextInput::make('promotion_discount')
+                            ->label('Ahorro en promociones (incluido en subtotal)')
+                            ->prefix('Q')
+                            ->disabled(),
+
                         Forms\Components\TextInput::make('wallet_discount')
                             ->label('Descuento Monedero')
                             ->prefix('Q')

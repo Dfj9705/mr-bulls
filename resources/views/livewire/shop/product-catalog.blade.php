@@ -112,11 +112,11 @@
                                 </option>
 
                                 <option value="price_asc">
-                                    Menor precio
+                                    Menor precio por unidad
                                 </option>
 
                                 <option value="price_desc">
-                                    Mayor precio
+                                    Mayor precio por unidad
                                 </option>
 
                                 <option value="name">
@@ -232,7 +232,7 @@
                                                     <div class="d-flex flex-wrap
                                                                                             align-items-center gap-2">
 
-                                                        <span class="fw-bold fs-5">
+                                                        <x-shop.promotion-offer :product="$product" /><span class="fw-bold fs-5">
 
                                                             Q{{ number_format(
                                 $product->price,

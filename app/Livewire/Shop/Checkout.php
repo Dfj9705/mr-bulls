@@ -5,6 +5,8 @@ namespace App\Livewire\Shop;
 use App\Models\Address;
 use App\Models\InventoryMovement;
 use App\Services\CartService;
+use App\Services\PricingService;
+use Livewire\Attributes\Locked;
 use App\Services\WalletService;
 use App\Support\GuatemalaLocations;
 use Illuminate\Support\Facades\Auth;
@@ -35,8 +37,13 @@ class Checkout extends Component
 
     public string $shippingPhone = '';
 
+    #[Locked]
     public array $checkoutQuantities = [];
 
+    #[Locked]
+    public string $checkoutQuote = '';
+
+    #[Locked]
     public array $checkoutPrices = [];
 
     public bool $useWallet = false;
@@ -97,6 +104,8 @@ class Checkout extends Component
             ])
             ->all();
 
+        $this->checkoutQuote = app(PricingService::class)->fingerprint($items);
+
         if (!Auth::check()) {
             return;
         }
@@ -105,6 +114,7 @@ class Checkout extends Component
 
         $this->customerName = $user->name;
         $this->customerEmail = $user->email;
+        $this->customerPhone = $user->addresses()->where('is_default', true)->first()->phone;
         $this->shippingRecipient = $user->name;
 
         /*
@@ -465,11 +475,7 @@ class Checkout extends Component
             |--------------------------------------------------------------------------
             */
 
-            $subtotal = 0;
-
-            $orderItems = [];
-
-            foreach ($this->checkoutQuantities as $productId => $quantity) {
+            foreach ($cartItems->mapWithKeys(fn($item) => [$item["product"]->id => $item["quantity"]]) as $productId => $quantity) {
 
                 $product = $products->get((int) $productId);
 
@@ -489,7 +495,7 @@ class Checkout extends Component
                     ]);
                 }
 
-                if ($product->stock < $quantity) {
+                if ($quantity < 1 || $product->stock < $quantity) {
                     throw ValidationException::withMessages([
                         'cart' =>
                             "La disponibilidad de {$product->name} cambió. "
@@ -516,27 +522,36 @@ class Checkout extends Component
                     ]);
                 }
 
-                $unitPrice = (float) $product->price;
-
-                $itemSubtotal = round(
-                    $unitPrice * $quantity,
-                    2
-                );
-
-                $subtotal += $itemSubtotal;
-
-                $orderItems[] = [
-                    'product_id' => $product->id,
-                    'product_name' => $product->name,
-                    'product_sku' => $product->sku,
-                    'unit_price' => $unitPrice,
-                    'quantity' => $quantity,
-                    'subtotal' => $itemSubtotal,
-                ];
             }
 
 
-            $subtotal = round($subtotal, 2);
+            // Requote the locked products; the browser cannot supply authoritative prices.
+            $pricedItems = app(PricingService::class)->quote(
+                $cartItems->map(fn($item) => [
+                    'product' => $products->get($item['product']->id),
+                    'quantity' => $item['quantity'],
+                ]),
+                true
+            );
+            if (app(PricingService::class)->fingerprint($pricedItems) !== $this->checkoutQuote) {
+                throw ValidationException::withMessages([
+                    'cart' => 'El precio o la promoción cambió. Regresa al carrito y revisa tu compra.',
+                ]);
+            }
+            $orderItems = $pricedItems->map(fn($item) => [
+                'product_id' => $item['product']->id,
+                'product_name' => $item['product']->name,
+                'product_sku' => $item['product']->sku,
+                'base_unit_price' => $item['product']->price,
+                // Rounded average for display; subtotal is the authoritative line amount.
+                'unit_price' => round($item['subtotal'] / $item['quantity'], 2),
+                'quantity' => $item['quantity'],
+                'subtotal' => $item['subtotal'],
+                'promotion_discount' => $item['promotion_discount_cents'] / 100,
+                'promotion_snapshot' => $item['promotion_snapshot'],
+            ])->all();
+            $subtotal = round($pricedItems->sum('subtotal'), 2);
+            $promotionDiscount = $pricedItems->sum('promotion_discount_cents') / 100;
 
 
             /*
@@ -641,6 +656,7 @@ class Checkout extends Component
                  * Totales
                  */
                 'subtotal' => $subtotal,
+                'promotion_discount' => $promotionDiscount,
                 'shipping_cost' => $shippingCost,
                 'total' => $total,
 

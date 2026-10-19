@@ -113,7 +113,7 @@
                     {{-- PRECIO --}}
                     <div class="d-flex align-items-center gap-3 mb-4">
 
-                        <span class="display-6 fw-bold mb-0">
+                        <x-shop.promotion-offer :product="$product" /><span class="display-6 fw-bold mb-0">
                             Q{{ number_format($product->price, 2) }}
                         </span>
 

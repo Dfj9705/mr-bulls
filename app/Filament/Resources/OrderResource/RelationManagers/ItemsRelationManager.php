@@ -38,8 +38,19 @@ class ItemsRelationManager extends RelationManager
                     ->label('SKU'),
 
                 Tables\Columns\TextColumn::make('unit_price')
-                    ->label('Precio')
+                    ->label('Precio efectivo promedio')
                     ->money('GTQ'),
+
+                Tables\Columns\TextColumn::make('base_unit_price')
+                    ->label('Precio normal')
+                    ->money('GTQ'),
+
+                Tables\Columns\TextColumn::make('promotion_discount')
+                    ->label('Ahorro en la línea')
+                    ->money('GTQ'),
+
+                Tables\Columns\TextColumn::make('promotion_snapshot.name')
+                    ->label('Promoción'),
 
                 Tables\Columns\TextColumn::make('quantity')
                     ->label('Cantidad'),

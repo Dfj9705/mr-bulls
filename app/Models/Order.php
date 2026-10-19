@@ -55,6 +55,7 @@ class Order extends Model
 
         'stock_restored_at',
         'wallet_discount',
+        'promotion_discount',
     ];
 
     protected function casts(): array
@@ -66,6 +67,7 @@ class Order extends Model
             'stock_restored_at' => 'datetime',
             'paid_at' => 'datetime',
             'wallet_discount' => 'decimal:2',
+            'promotion_discount' => 'decimal:2',
         ];
     }
 

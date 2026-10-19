@@ -429,7 +429,7 @@
                                 <div>
 
                                     <div class="fw-semibold">
-                                        {{ $item->product_name }}
+                                        {{ $item->product_name }} <x-shop.order-promotion :item="$item" />
                                     </div>
 
                                     <small class="text-muted">
@@ -439,7 +439,7 @@
                                     <div class="small text-muted mt-1">
                                         {{ $item->quantity }}
                                         ×
-                                        Q{{ number_format($item->unit_price, 2) }}
+                                        Q{{ number_format(($item->base_unit_price ?? $item->unit_price), 2) }}
                                     </div>
 
                                 </div>
@@ -560,7 +560,9 @@
                             </span>
 
                             <span>
-                                Q{{ number_format($order->subtotal, 2) }}
+                                Q{{ number_format($order->subtotal, 2) }}@if(($order->promotion_discount ?? 0) > 0)
+<small class="d-block text-success">Ahorro en promociones ya incluido: Q{{ number_format($order->promotion_discount, 2) }}</small>
+@endif
                             </span>
                         </div>
 
