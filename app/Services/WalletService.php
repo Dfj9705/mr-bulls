@@ -47,13 +47,31 @@ class WalletService
                 return $existing;
             }
 
-            $totalCents = $this->toCents($order->total);
 
+            $subtotalCents = $this->toCents($order->subtotal);
+
+            $walletDiscountCents = $this->toCents(
+                $order->wallet_discount ?? '0.00'
+            );
+
+            // Solo los productos, después de aplicar el monedero.
+// No se incluyen gastos de envío.
+            $rewardBaseCents = max(
+                0,
+                $subtotalCents - $walletDiscountCents
+            );
+
+            // Recompensa del 2%, redondeada a centavos.
             $rewardCents = (int) round(
-                $totalCents * 0.02,
+                $rewardBaseCents * 0.02,
                 0,
                 PHP_ROUND_HALF_UP
             );
+
+            if ($rewardCents <= 0) {
+                return null;
+            }
+
 
             if ($rewardCents <= 0) {
                 return null;
