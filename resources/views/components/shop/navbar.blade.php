@@ -27,6 +27,31 @@
             {{-- Acciones --}}
             <div class="d-flex align-items-center gap-2 ms-auto">
 
+                {{-- Monedero del cliente --}}
+                @auth
+                    @if (config('loyalty.enabled', false))
+                        @php
+                            $walletBalance = auth()->user()
+                                ->wallet()
+                                ->value('balance') ?? '0.00';
+                        @endphp
+
+
+                        <a href="{{ route('account.wallet') }}"
+                            class="navbar-action d-flex align-items-center gap-2 text-decoration-none" title="Ver mi monedero"
+                            wire:navigate>
+
+                            <i class="bx bx-wallet fs-4"></i>
+
+                            <span class="d-none d-sm-inline fw-semibold">
+                                Q {{ number_format((float) $walletBalance, 2) }}
+                            </span>
+
+                        </a>
+
+                    @endif
+                @endauth
+
                 {{-- Usuario --}}
                 @guest
 
@@ -84,7 +109,8 @@
 
                             {{-- Perfil --}}
                             <li>
-                                <a href="{{ route('account.profile') }}" class="dropdown-item">
+                                <a href="{{ route('account.profile') }}"
+                                    class="dropdown-item {{ request()->routeIs('account.profile') ? 'active' : '' }}">
                                     <i class="bx bx-user-circle"></i>
 
                                     <span>
@@ -96,7 +122,8 @@
 
                             {{-- Pedidos --}}
                             <li>
-                                <a href="{{ route('account.orders') }}" class="dropdown-item">
+                                <a href="{{ route('account.orders') }}"
+                                    class="dropdown-item {{ request()->routeIs('account.orders') ? 'active' : '' }}">
                                     <i class="bx bx-package"></i>
 
                                     <span>
@@ -108,7 +135,8 @@
 
                             {{-- Direcciones --}}
                             <li>
-                                <a href="{{ route('account.addresses') }}" class="dropdown-item">
+                                <a href="{{ route('account.addresses') }}"
+                                    class="dropdown-item {{ request()->routeIs('account.addresses') ? 'active' : '' }}">
                                     <i class="bx bx-map"></i>
 
                                     <span>
@@ -116,6 +144,22 @@
                                     </span>
                                 </a>
                             </li>
+
+
+                            {{-- Monedero --}}
+                            <li>
+                                <a href="{{ route('account.wallet') }}"
+                                    class="dropdown-item {{ request()->routeIs('account.wallet') ? 'active' : '' }}">
+
+                                    <i class="bx bx-wallet"></i>
+
+                                    <span>
+                                        Mi monedero
+                                    </span>
+
+                                </a>
+                            </li>
+
 
 
                             <li>

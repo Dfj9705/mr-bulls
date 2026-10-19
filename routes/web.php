@@ -259,4 +259,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
         'shop.account.addresses'
     )->name('account.addresses');
 
+    /*
+    |--------------------------------------------------------------------------
+    | Monedero del cliente
+    |--------------------------------------------------------------------------
+    */
+
+    Route::view(
+        '/mi-cuenta/monedero',
+        'shop.account.wallet'
+    )->name('account.wallet');
+
 });
