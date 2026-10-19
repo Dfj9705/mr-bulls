@@ -277,6 +277,35 @@ class WalletService
             );
         }
 
+
+        if (!config('loyalty.enabled', false)) {
+            throw ValidationException::withMessages([
+                'wallet' => 'El programa de lealtad no está disponible.',
+            ]);
+        }
+
+        $startDate = config('loyalty.start_date');
+
+        if (app()->environment('production') && !$startDate) {
+            throw ValidationException::withMessages([
+                'wallet' => 'El programa de lealtad aún no está disponible.',
+            ]);
+        }
+
+        if ($startDate) {
+            $startsAt = \Carbon\Carbon::parse(
+                $startDate,
+                config('app.timezone')
+            )->startOfDay();
+
+            if (now()->lt($startsAt)) {
+                throw ValidationException::withMessages([
+                    'wallet' => 'El programa de lealtad aún no ha iniciado.',
+                ]);
+            }
+        }
+
+
         if ($amountCents === 0) {
             return null;
         }

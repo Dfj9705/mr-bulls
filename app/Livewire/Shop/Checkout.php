@@ -185,6 +185,33 @@ class Checkout extends Component
     }
 
 
+    private function walletEnabled(): bool
+    {
+        if (!config('loyalty.enabled', false)) {
+            return false;
+        }
+
+        $startDate = config('loyalty.start_date');
+
+        if (app()->environment('production') && !$startDate) {
+            return false;
+        }
+
+        if ($startDate) {
+            $startsAt = \Carbon\Carbon::parse(
+                $startDate,
+                config('app.timezone')
+            )->startOfDay();
+
+            if (now()->lt($startsAt)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+
     public function render(CartService $cart)
     {
         $addresses = collect();
@@ -212,7 +239,7 @@ class Checkout extends Component
             ? max(0, (int) round((float) $this->walletAmount * 100))
             : 0;
 
-        $walletDiscountCents = Auth::check()
+        $walletDiscountCents = Auth::check() && $this->walletEnabled()
             ? min(
                 $requestedCents,
                 $walletBalanceCents,
@@ -245,6 +272,7 @@ class Checkout extends Component
 
             'walletDiscount' => $walletDiscount,
             'finalTotal' => $finalTotal,
+            'walletEnabled' => $this->walletEnabled(),
         ]);
     }
 
@@ -529,6 +557,14 @@ class Checkout extends Component
             $walletAmountCents = 0;
 
             if ($this->useWallet) {
+
+
+                if (!$this->walletEnabled()) {
+                    throw ValidationException::withMessages([
+                        'wallet' => 'El programa de lealtad no está disponible.',
+                    ]);
+                }
+
                 if (!Auth::check()) {
                     throw ValidationException::withMessages([
                         'wallet' => 'Debes iniciar sesión para utilizar tu saldo.',

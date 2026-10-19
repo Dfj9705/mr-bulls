@@ -139,16 +139,16 @@
                                                             <div class="col-md-6" wire:key="checkout-address-{{ $savedAddress->id }}">
 
                                                                 <button type="button" wire:click="selectAddress({{ $savedAddress->id }})" class="checkout-address-card text-start w-100
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    {{ !$useNewAddress &&
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                {{ !$useNewAddress &&
                                             $selectedAddressId === $savedAddress->id
                                             ? 'active'
                                             : '' }}">
 
                                                                     <div
                                                                         class="d-flex
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           justify-content-between
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           align-items-start
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           gap-2">
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       justify-content-between
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       align-items-start
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       gap-2">
 
                                                                         <strong>
                                                                             {{ $savedAddress->label ?: 'Dirección' }}
@@ -195,8 +195,8 @@
 
                                             <button type="button" wire:click="useNewAddressForm"
                                                 class="checkout-address-card
-                                                                                                                                                                                                                                                                                                                                                               text-start w-100
-                                                                                                                                                                                                                                                                                                                                                               {{ $useNewAddress ? 'active' : '' }}">
+                                                                                                                                                                                                                                                                                                                                                                       text-start w-100
+                                                                                                                                                                                                                                                                                                                                                                       {{ $useNewAddress ? 'active' : '' }}">
 
                                                 <div class="d-flex align-items-center gap-2">
 
@@ -432,7 +432,7 @@
 
                                                         <div
                                                             class="d-flex gap-3 py-3
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       {{ !$loop->last ? 'border-bottom' : '' }}">
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   {{ !$loop->last ? 'border-bottom' : '' }}">
 
                                                             @if($product->main_image)
 
@@ -499,64 +499,64 @@
 
                             </div>
 
+                            @if ($walletEnabled)
+                                @if (auth()->check() && (float) $walletBalance > 0)
+                                    <div class="card border mb-3">
+                                        <div class="card-body">
 
-                            @if (auth()->check() && (float) $walletBalance > 0)
-                                <div class="card border mb-3">
-                                    <div class="card-body">
-
-                                        <div class="d-flex align-items-center gap-2 mb-3">
-                                            <i class="bx bx-wallet fs-3 text-primary"></i>
-                                            <div>
-                                                <h6 class="mb-0">Mi monedero Mr Bulls</h6>
-                                                <small class="text-muted">
-                                                    Utiliza tus recompensas acumuladas
-                                                </small>
-                                            </div>
-                                        </div>
-
-                                        <div class="bg-label-success rounded p-3 mb-3">
-                                            <small>Saldo disponible</small>
-                                            <h4 class="mb-0">
-                                                Q{{ number_format((float) $walletBalance, 2) }}
-                                            </h4>
-                                        </div>
-
-                                        <div class="form-check form-switch mb-3">
-                                            <input class="form-check-input" type="checkbox" id="useWallet"
-                                                wire:model.live="useWallet">
-
-                                            <label class="form-check-label" for="useWallet">
-                                                Utilizar mi saldo en esta compra
-                                            </label>
-                                        </div>
-
-                                        @if ($useWallet)
-                                            <label class="form-label">
-                                                ¿Cuánto saldo deseas utilizar?
-                                            </label>
-
-                                            <div class="input-group">
-                                                <span class="input-group-text">Q</span>
-
-                                                <input type="number" class="form-control" min="0.01" max="{{ $walletBalance }}"
-                                                    step="0.01" wire:model.live.debounce.300ms="walletAmount">
+                                            <div class="d-flex align-items-center gap-2 mb-3">
+                                                <i class="bx bx-wallet fs-3 text-primary"></i>
+                                                <div>
+                                                    <h6 class="mb-0">Mi monedero Mr Bulls</h6>
+                                                    <small class="text-muted">
+                                                        Utiliza tus recompensas acumuladas
+                                                    </small>
+                                                </div>
                                             </div>
 
-                                            @error('walletAmount')
-                                                <small class="text-danger">{{ $message }}</small>
-                                            @enderror
+                                            <div class="bg-label-success rounded p-3 mb-3">
+                                                <small>Saldo disponible</small>
+                                                <h4 class="mb-0">
+                                                    Q{{ number_format((float) $walletBalance, 2) }}
+                                                </h4>
+                                            </div>
 
-                                            @error('wallet')
-                                                <small class="text-danger d-block mt-2">
-                                                    {{ $message }}
-                                                </small>
-                                            @enderror
-                                        @endif
+                                            <div class="form-check form-switch mb-3">
+                                                <input class="form-check-input" type="checkbox" id="useWallet"
+                                                    wire:model.live="useWallet">
 
+                                                <label class="form-check-label" for="useWallet">
+                                                    Utilizar mi saldo en esta compra
+                                                </label>
+                                            </div>
+
+                                            @if ($useWallet)
+                                                <label class="form-label">
+                                                    ¿Cuánto saldo deseas utilizar?
+                                                </label>
+
+                                                <div class="input-group">
+                                                    <span class="input-group-text">Q</span>
+
+                                                    <input type="number" class="form-control" min="0.01" max="{{ $walletBalance }}"
+                                                        step="0.01" wire:model.live.debounce.300ms="walletAmount">
+                                                </div>
+
+                                                @error('walletAmount')
+                                                    <small class="text-danger">{{ $message }}</small>
+                                                @enderror
+
+                                                @error('wallet')
+                                                    <small class="text-danger d-block mt-2">
+                                                        {{ $message }}
+                                                    </small>
+                                                @enderror
+                                            @endif
+
+                                        </div>
                                     </div>
-                                </div>
+                                @endif
                             @endif
-
 
 
                             <hr>
