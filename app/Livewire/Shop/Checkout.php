@@ -114,7 +114,7 @@ class Checkout extends Component
 
         $this->customerName = $user->name;
         $this->customerEmail = $user->email;
-        $this->customerPhone = $user->addresses()->where('is_default', true)->first()->phone;
+        $this->customerPhone = $user->addresses()->where('is_default', true)->first()?->phone ?? '';
         $this->shippingRecipient = $user->name;
 
         /*
