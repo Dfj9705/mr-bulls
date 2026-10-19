@@ -5,6 +5,7 @@ namespace App\Livewire\Shop;
 use App\Models\Address;
 use App\Models\InventoryMovement;
 use App\Services\CartService;
+use App\Services\WalletService;
 use App\Support\GuatemalaLocations;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
@@ -37,6 +38,10 @@ class Checkout extends Component
     public array $checkoutQuantities = [];
 
     public array $checkoutPrices = [];
+
+    public bool $useWallet = false;
+
+    public string $walletAmount = '0.00';
 
     /*
     |--------------------------------------------------------------------------
@@ -180,6 +185,33 @@ class Checkout extends Component
     }
 
 
+    private function walletEnabled(): bool
+    {
+        if (!config('loyalty.enabled', false)) {
+            return false;
+        }
+
+        $startDate = config('loyalty.start_date');
+
+        if (app()->environment('production') && !$startDate) {
+            return false;
+        }
+
+        if ($startDate) {
+            $startsAt = \Carbon\Carbon::parse(
+                $startDate,
+                config('app.timezone')
+            )->startOfDay();
+
+            if (now()->lt($startsAt)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+
     public function render(CartService $cart)
     {
         $addresses = collect();
@@ -191,6 +223,34 @@ class Checkout extends Component
                 ->latest()
                 ->get();
         }
+
+
+        $subtotalCents = (int) round(
+            (float) $cart->subtotal() * 100
+        );
+
+        $walletBalanceCents = (int) round(
+            (float) (
+                Auth::user()?->wallet?->balance ?? 0
+            ) * 100
+        );
+
+        $requestedCents = $this->useWallet
+            ? max(0, (int) round((float) $this->walletAmount * 100))
+            : 0;
+
+        $walletDiscountCents = Auth::check() && $this->walletEnabled()
+            ? min(
+                $requestedCents,
+                $walletBalanceCents,
+                $subtotalCents
+            )
+            : 0;
+
+        $walletDiscount = $walletDiscountCents / 100;
+
+        $finalTotal = ($subtotalCents - $walletDiscountCents) / 100;
+
 
         return view('livewire.shop.checkout', [
             'items' => $cart->items(),
@@ -205,6 +265,14 @@ class Checkout extends Component
                 GuatemalaLocations::municipalitiesFor(
                     $this->department
                 ),
+
+            'walletBalance' => Auth::check()
+                ? (Auth::user()->wallet?->balance ?? '0.00')
+                : '0.00',
+
+            'walletDiscount' => $walletDiscount,
+            'finalTotal' => $finalTotal,
+            'walletEnabled' => $this->walletEnabled(),
         ]);
     }
 
@@ -275,6 +343,17 @@ class Checkout extends Component
                 'nullable',
                 'string',
                 'max:1000',
+            ],
+
+            'useWallet' => [
+                'boolean',
+            ],
+
+            'walletAmount' => [
+                'required_if:useWallet,true',
+                'numeric',
+                'min:0',
+                'decimal:0,2',
             ],
         ];
     }
@@ -475,6 +554,43 @@ class Checkout extends Component
             $total = $subtotal + $shippingCost;
 
 
+            $walletAmountCents = 0;
+
+            if ($this->useWallet) {
+
+
+                if (!$this->walletEnabled()) {
+                    throw ValidationException::withMessages([
+                        'wallet' => 'El programa de lealtad no está disponible.',
+                    ]);
+                }
+
+                if (!Auth::check()) {
+                    throw ValidationException::withMessages([
+                        'wallet' => 'Debes iniciar sesión para utilizar tu saldo.',
+                    ]);
+                }
+
+                $walletAmountCents = (int) round(
+                    (float) $validated['walletAmount'] * 100,
+                    0,
+                    PHP_ROUND_HALF_UP
+                );
+
+                if ($walletAmountCents <= 0) {
+                    throw ValidationException::withMessages([
+                        'wallet' => 'Ingresa un importe mayor que cero.',
+                    ]);
+                }
+
+                if ($walletAmountCents > (int) round($total * 100)) {
+                    throw ValidationException::withMessages([
+                        'wallet' => 'El saldo solicitado supera el total del pedido.',
+                    ]);
+                }
+            }
+
+
             /*
             |--------------------------------------------------------------------------
             | 6. Crear pedido
@@ -559,6 +675,13 @@ class Checkout extends Component
                     $order->id
                 ),
             ]);
+
+            if ($walletAmountCents > 0) {
+                app(WalletService::class)->reserveBalance(
+                    $order,
+                    $walletAmountCents
+                );
+            }
 
 
             /*

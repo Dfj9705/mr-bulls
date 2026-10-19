@@ -7,7 +7,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use App\Mail\PaymentLinkAvailable;
 use Illuminate\Support\Facades\Mail;
-
+use App\Services\WalletService;
+use Illuminate\Support\Facades\DB;
 class Order extends Model
 {
     public const STATUS_PENDING = 'pending';
@@ -53,6 +54,7 @@ class Order extends Model
         'public_token',
 
         'stock_restored_at',
+        'wallet_discount',
     ];
 
     protected function casts(): array
@@ -63,8 +65,13 @@ class Order extends Model
             'total' => 'decimal:2',
             'stock_restored_at' => 'datetime',
             'paid_at' => 'datetime',
+            'wallet_discount' => 'decimal:2',
         ];
     }
+
+    protected $attributes = [
+        'wallet_discount' => '0.00',
+    ];
 
     public function user(): BelongsTo
     {
@@ -121,6 +128,24 @@ class Order extends Model
             }
         });
 
+
+        static::updated(function (Order $order) {
+
+            if (!$order->wasChanged('payment_status')) {
+                return;
+            }
+
+            if ($order->payment_status !== self::PAYMENT_PAID) {
+                return;
+            }
+
+            DB::afterCommit(function () use ($order) {
+                app(WalletService::class)->creditPurchase($order);
+            });
+
+        });
+
+
     }
 
     public function statusHistory(): HasMany
@@ -132,5 +157,10 @@ class Order extends Model
     public function inventoryMovements(): HasMany
     {
         return $this->hasMany(InventoryMovement::class);
+    }
+
+    public function walletTransactions(): HasMany
+    {
+        return $this->hasMany(WalletTransaction::class);
     }
 }
