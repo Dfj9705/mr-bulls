@@ -54,6 +54,7 @@ class Order extends Model
         'public_token',
 
         'stock_restored_at',
+        'wallet_discount',
     ];
 
     protected function casts(): array
@@ -64,8 +65,13 @@ class Order extends Model
             'total' => 'decimal:2',
             'stock_restored_at' => 'datetime',
             'paid_at' => 'datetime',
+            'wallet_discount' => 'decimal:2',
         ];
     }
+
+    protected $attributes = [
+        'wallet_discount' => '0.00',
+    ];
 
     public function user(): BelongsTo
     {

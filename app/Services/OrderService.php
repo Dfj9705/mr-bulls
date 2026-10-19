@@ -89,6 +89,11 @@ class OrderService
             $order->status = Order::STATUS_CANCELLED;
             $order->save();
 
+            /*
+             * Devolvemos el saldo utilizado en el pedido.
+             */
+            app(WalletService::class)->refundBalance($order);
+
             $order->statusHistory()->create([
                 'status' => Order::STATUS_CANCELLED,
                 'changed_by' => auth()->id(),

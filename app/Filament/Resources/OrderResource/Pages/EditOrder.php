@@ -149,7 +149,9 @@ class EditOrder extends EditRecord
                     Notification::make()
                         ->title('Pedido cancelado')
                         ->body(
-                            'El pedido fue cancelado y el stock fue devuelto al inventario.'
+                            'El pedido fue cancelado. El inventario y '
+                            . 'el saldo utilizado fueron restaurados, '
+                            . 'cuando correspondía.'
                         )
                         ->success()
                         ->send();
