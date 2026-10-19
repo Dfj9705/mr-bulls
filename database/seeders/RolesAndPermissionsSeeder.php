@@ -15,6 +15,10 @@ class RolesAndPermissionsSeeder extends Seeder
             ->forgetCachedPermissions();
 
         $permissions = [
+            'promociones.ver',
+            'promociones.crear',
+            'promociones.editar',
+
             // Productos
             'productos.ver',
             'productos.crear',

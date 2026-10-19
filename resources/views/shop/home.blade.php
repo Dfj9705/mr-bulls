@@ -237,7 +237,7 @@
 
                                     <div class="d-flex align-items-center gap-2">
 
-                                        <span class="fw-bold fs-5">
+                                        <x-shop.promotion-offer :product="$product" /><span class="fw-bold fs-5">
                                             Q{{ number_format($product->price, 2) }}
                                         </span>
 

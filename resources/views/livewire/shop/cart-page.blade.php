@@ -36,28 +36,21 @@
                                         $product = $item['product'];
                                     @endphp
 
-                                    <div
-                                        class="cart-item py-4
-                                               {{ ! $loop->last ? 'border-bottom' : '' }}"
-                                        wire:key="cart-product-{{ $product->id }}"
-                                    >
+                                    <div class="cart-item py-4
+                                                                       {{ !$loop->last ? 'border-bottom' : '' }}"
+                                        wire:key="cart-product-{{ $product->id }}">
 
                                         <div class="row align-items-center g-3">
 
                                             {{-- IMAGEN --}}
                                             <div class="col-3 col-md-2">
 
-                                                <a
-                                                    href="{{ route('products.show', $product) }}"
-                                                >
+                                                <a href="{{ route('products.show', $product) }}">
 
                                                     @if($product->main_image)
 
-                                                        <img
-                                                            src="{{ asset('storage/' . $product->main_image) }}"
-                                                            alt="{{ $product->name }}"
-                                                            class="img-fluid rounded cart-product-image"
-                                                        >
+                                                        <img src="{{ asset('storage/' . $product->main_image) }}"
+                                                            alt="{{ $product->name }}" class="img-fluid rounded cart-product-image">
 
                                                     @else
 
@@ -73,7 +66,7 @@
 
 
                                             {{-- INFORMACIÓN --}}
-                                            <div class="col-9 col-md-4">
+                                            <div class="col-9 col-md-3">
 
                                                 <small class="text-muted">
                                                     {{ $product->category->name }}
@@ -81,10 +74,8 @@
 
                                                 <h5 class="mb-1">
 
-                                                    <a
-                                                        href="{{ route('products.show', $product) }}"
-                                                        class="text-body text-decoration-none"
-                                                    >
+                                                    <a href="{{ route('products.show', $product) }}"
+                                                        class="text-body text-decoration-none">
                                                         {{ $product->name }}
                                                     </a>
 
@@ -106,6 +97,7 @@
 
                                                 <span class="fw-semibold">
                                                     Q{{ number_format($product->price, 2) }}
+                                                    <x-shop.promotion-line :item="$item" />
                                                 </span>
 
                                             </div>
@@ -116,29 +108,17 @@
 
                                                 <div class="input-group input-group-sm">
 
-                                                    <button
-                                                        type="button"
-                                                        class="btn btn-outline-secondary"
-                                                        wire:click="decrease({{ $product->id }})"
-                                                        wire:loading.attr="disabled"
-                                                    >
+                                                    <button type="button" class="btn btn-outline-secondary"
+                                                        wire:click="decrease({{ $product->id }})" wire:loading.attr="disabled">
                                                         −
                                                     </button>
 
-                                                    <input
-                                                        type="text"
-                                                        class="form-control text-center"
-                                                        value="{{ $item['quantity'] }}"
-                                                        readonly
-                                                    >
+                                                    <input type="text" class="form-control text-center"
+                                                        value="{{ $item['quantity'] }}" readonly>
 
-                                                    <button
-                                                        type="button"
-                                                        class="btn btn-outline-secondary"
-                                                        wire:click="increase({{ $product->id }})"
-                                                        wire:loading.attr="disabled"
-                                                        @disabled($item['quantity'] >= $product->stock)
-                                                    >
+                                                    <button type="button" class="btn btn-outline-secondary"
+                                                        wire:click="increase({{ $product->id }})" wire:loading.attr="disabled"
+                                                        @disabled($item['quantity'] >= $product->stock)>
                                                         +
                                                     </button>
 
@@ -148,7 +128,7 @@
 
 
                                             {{-- SUBTOTAL --}}
-                                            <div class="col-8 col-md-1">
+                                            <div class="col-8 col-md-2">
 
                                                 <small class="d-md-none text-muted d-block">
                                                     Subtotal
@@ -164,12 +144,9 @@
                                             {{-- ELIMINAR --}}
                                             <div class="col-4 col-md-1 text-end">
 
-                                                <button
-                                                    type="button"
-                                                    class="btn btn-sm btn-outline-danger"
+                                                <button type="button" class="btn btn-sm btn-outline-danger"
                                                     wire:click="remove({{ $product->id }})"
-                                                    wire:confirm="¿Deseas eliminar este producto del carrito?"
-                                                >
+                                                    wire:confirm="¿Deseas eliminar este producto del carrito?">
                                                     <i class="bx bx-trash"></i>
                                                 </button>
 
@@ -188,20 +165,13 @@
 
                         <div class="d-flex justify-content-between mt-3">
 
-                            <a
-                                href="{{ route('products.index') }}"
-                                class="btn btn-outline-secondary"
-                            >
+                            <a href="{{ route('products.index') }}" class="btn btn-outline-secondary">
                                 <i class="bx bx-left-arrow-alt me-1"></i>
                                 Seguir comprando
                             </a>
 
-                            <button
-                                type="button"
-                                class="btn btn-outline-danger"
-                                wire:click="clear"
-                                wire:confirm="¿Deseas vaciar todo el carrito?"
-                            >
+                            <button type="button" class="btn btn-outline-danger" wire:click="clear"
+                                wire:confirm="¿Deseas vaciar todo el carrito?">
                                 Vaciar carrito
                             </button>
 
@@ -213,10 +183,7 @@
                     {{-- RESUMEN --}}
                     <div class="col-lg-4">
 
-                        <div
-                            class="card border-0 shadow-sm"
-                            style="position: sticky; top: 100px;"
-                        >
+                        <div class="card border-0 shadow-sm" style="position: sticky; top: 100px;">
 
                             <div class="card-body p-4">
 
@@ -257,8 +224,8 @@
                                         Envío
                                     </span>
 
-                                    <span class="text-muted">
-                                        Por calcular
+                                    <span class="text-success fw-bold">
+                                        Gratis (Q 0.00)
                                     </span>
 
                                 </div>
@@ -268,7 +235,7 @@
 
 
                                 <div class="d-flex justify-content-between
-                                            align-items-center mb-4">
+                                                        align-items-center mb-4">
 
                                     <span class="fw-bold fs-5">
                                         Total
@@ -281,10 +248,7 @@
                                 </div>
 
 
-                                <a
-                                    href="{{ route('checkout.index') }}"
-                                    class="btn btn-primary btn-lg w-100"
-                                >
+                                <a href="{{ route('checkout.index') }}" class="btn btn-primary btn-lg w-100">
                                     Continuar compra
                                 </a>
 
@@ -306,10 +270,7 @@
                 <div class="text-center py-5">
 
                     <div class="mb-4">
-                        <i
-                            class="bx bx-cart"
-                            style="font-size: 5rem;"
-                        ></i>
+                        <i class="bx bx-cart" style="font-size: 5rem;"></i>
                     </div>
 
                     <h3 class="fw-bold">
@@ -320,10 +281,7 @@
                         Explora nuestros productos y encuentra algo para ti.
                     </p>
 
-                    <a
-                        href="{{ route('products.index') }}"
-                        class="btn btn-primary btn-lg"
-                    >
+                    <a href="{{ route('products.index') }}" class="btn btn-primary btn-lg">
                         Ver productos
                     </a>
 

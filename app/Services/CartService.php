@@ -73,7 +73,7 @@ class CartService
             session()->put(self::SESSION_KEY, $normalizedCart);
         }
 
-        return $items;
+        return app(PricingService::class)->quote($items);
     }
 
     public function add(Product $product, int $quantity = 1): void

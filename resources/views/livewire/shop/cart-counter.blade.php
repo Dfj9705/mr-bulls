@@ -112,6 +112,7 @@
                                 {{ $item['quantity'] }}
                                 ×
                                 Q{{ number_format($product->price, 2) }}
+ <x-shop.promotion-line :item="$item" />
                             </div>
 
                             <div class="fw-semibold">
