@@ -30,8 +30,11 @@ Route::get('/', function () {
         ->limit(8)
         ->get();
 
+    $heroSlides = \App\Models\HeroSlide::query()->where('is_active', true)->orderBy('sort_order')->orderBy('id')->get();
+
     return view('shop.home', compact(
         'categories',
+        'heroSlides',
         'featuredProducts'
     ));
 
