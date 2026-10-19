@@ -252,6 +252,21 @@
 
                             <tr>
                                 <td style="padding:5px 0;">
+                                    Descuento Monedero
+                                </td>
+
+                                <td
+                                    align="right"
+                                    style="padding:5px 0;"
+                                >
+                                    - Q{{ number_format(
+                                        $order->wallet_discount,
+                                        2
+                                    ) }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding:5px 0;">
                                     Envío
                                 </td>
 
