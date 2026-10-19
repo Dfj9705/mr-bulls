@@ -86,14 +86,21 @@ class OrderService
                 $order->stock_restored_at = now();
             }
 
+
             $order->status = Order::STATUS_CANCELLED;
             $order->save();
 
-            /*
-             * Devolvemos el saldo utilizado en el pedido.
-             */
-            app(WalletService::class)->refundBalance($order);
+            $walletService = app(WalletService::class);
 
+            // 1. Devolver el saldo que el cliente utilizó
+// para pagar parcialmente este pedido.
+            $walletService->refundBalance($order);
+
+            // 2. Revertir la recompensa del 2%
+// si el pedido ya había generado una.
+            $walletService->reversePurchaseReward($order);
+
+            // 3. Registrar el cambio de estado.
             $order->statusHistory()->create([
                 'status' => Order::STATUS_CANCELLED,
                 'changed_by' => auth()->id(),
@@ -101,6 +108,7 @@ class OrderService
             ]);
 
             return $order->fresh('items');
+
         });
     }
 

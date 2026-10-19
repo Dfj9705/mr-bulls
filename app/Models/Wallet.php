@@ -11,12 +11,14 @@ class Wallet extends Model
     protected $fillable = [
         'user_id',
         'balance',
+        'pending_reversal',
     ];
 
     protected function casts(): array
     {
         return [
             'balance' => 'decimal:2',
+            'pending_reversal' => 'decimal:2',
         ];
     }
 
@@ -28,5 +30,10 @@ class Wallet extends Model
     public function transactions(): HasMany
     {
         return $this->hasMany(WalletTransaction::class);
+    }
+
+    public function reversals(): HasMany
+    {
+        return $this->hasMany(WalletReversal::class);
     }
 }

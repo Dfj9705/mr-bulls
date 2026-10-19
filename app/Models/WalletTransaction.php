@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class WalletTransaction extends Model
 {
@@ -22,6 +23,8 @@ class WalletTransaction extends Model
         'balance_after',
         'reference',
         'description',
+        'credited_amount',
+        'compensated_amount',
     ];
 
     protected function casts(): array
@@ -30,6 +33,8 @@ class WalletTransaction extends Model
             'amount' => 'decimal:2',
             'balance_before' => 'decimal:2',
             'balance_after' => 'decimal:2',
+            'credited_amount' => 'decimal:2',
+            'compensated_amount' => 'decimal:2',
         ];
     }
 
@@ -41,5 +46,12 @@ class WalletTransaction extends Model
     public function order(): BelongsTo
     {
         return $this->belongsTo(Order::class);
+    }
+
+    public function reversalApplications(): HasMany
+    {
+        return $this->hasMany(
+            WalletReversalApplication::class
+        );
     }
 }

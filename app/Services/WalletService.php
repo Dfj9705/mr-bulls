@@ -7,6 +7,8 @@ use App\Models\Wallet;
 use App\Models\WalletTransaction;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
+use App\Models\WalletReversal;
+use App\Models\WalletReversalApplication;
 use RuntimeException;
 
 class WalletService
@@ -17,6 +19,7 @@ class WalletService
      * El método es idempotente: no acredita dos veces
      * la recompensa del mismo pedido.
      */
+
     public function creditPurchase(Order $order): ?WalletTransaction
     {
         return DB::transaction(function () use ($order) {
@@ -25,21 +28,17 @@ class WalletService
                 ->lockForUpdate()
                 ->findOrFail($order->id);
 
-            if ($order->payment_status !== Order::PAYMENT_PAID) {
-                return null;
-            }
-
-            if ($order->status === Order::STATUS_CANCELLED) {
-                return null;
-            }
-
-            // Las compras de invitados no acumulan saldo.
-            if (!$order->user_id) {
+            if (
+                $order->payment_status !== Order::PAYMENT_PAID ||
+                $order->status === Order::STATUS_CANCELLED ||
+                !$order->user_id
+            ) {
                 return null;
             }
 
             $reference = 'purchase_reward:' . $order->id;
 
+            // Evitar acreditar dos veces la misma compra.
             $existing = WalletTransaction::query()
                 ->where('reference', $reference)
                 ->first();
@@ -50,8 +49,6 @@ class WalletService
 
             $totalCents = $this->toCents($order->total);
 
-            // 2% del importe efectivamente pagado.
-            // El total debe excluir el saldo utilizado.
             $rewardCents = (int) round(
                 $totalCents * 0.02,
                 0,
@@ -62,9 +59,9 @@ class WalletService
                 return null;
             }
 
-            Wallet::query()->firstOrCreate(
+            Wallet::firstOrCreate(
                 ['user_id' => $order->user_id],
-                ['balance' => '0.00']
+                ['balance' => '0.00', 'pending_reversal' => '0.00']
             );
 
             $wallet = Wallet::query()
@@ -72,28 +69,128 @@ class WalletService
                 ->lockForUpdate()
                 ->firstOrFail();
 
-            $beforeCents = $this->toCents($wallet->balance);
-            $afterCents = $beforeCents + $rewardCents;
+            // Segunda comprobación dentro del bloqueo.
+            $existing = WalletTransaction::query()
+                ->where('reference', $reference)
+                ->first();
 
+            if ($existing) {
+                return $existing;
+            }
+
+            $beforeCents = $this->toCents($wallet->balance);
+
+            $pendingBeforeCents = $this->toCents(
+                $wallet->pending_reversal ?? '0.00'
+            );
+
+            $remainingRewardCents = $rewardCents;
+            $compensatedCents = 0;
+
+            // Deudas pendientes, de la más antigua a la más reciente.
+            $reversals = WalletReversal::query()
+                ->where('wallet_id', $wallet->id)
+                ->where('pending_amount', '>', 0)
+                ->orderBy('id')
+                ->lockForUpdate()
+                ->get();
+
+            // Crear el movimiento de recompensa.
+            // Las aplicaciones se registrarán a continuación.
             $transaction = WalletTransaction::create([
                 'wallet_id' => $wallet->id,
                 'order_id' => $order->id,
                 'type' => WalletTransaction::TYPE_CREDIT,
                 'amount' => $this->toMoney($rewardCents),
+                'credited_amount' => '0.00',
+                'compensated_amount' => '0.00',
                 'balance_before' => $this->toMoney($beforeCents),
-                'balance_after' => $this->toMoney($afterCents),
+                'balance_after' => $this->toMoney($beforeCents),
                 'reference' => $reference,
                 'description' => 'Recompensa del 2% por compra '
                     . $order->order_number,
             ]);
 
+            foreach ($reversals as $reversal) {
+
+                if ($remainingRewardCents <= 0) {
+                    break;
+                }
+
+                $pendingCents = $this->toCents(
+                    $reversal->pending_amount
+                );
+
+                $appliedCents = min(
+                    $remainingRewardCents,
+                    $pendingCents
+                );
+
+                if ($appliedCents <= 0) {
+                    continue;
+                }
+
+                WalletReversalApplication::create([
+                    'wallet_transaction_id' => $transaction->id,
+                    'wallet_reversal_id' => $reversal->id,
+                    'amount' => $this->toMoney($appliedCents),
+                    'reversed_at' => null,
+                ]);
+
+                $reversal->update([
+                    'pending_amount' => $this->toMoney(
+                        $pendingCents - $appliedCents
+                    ),
+                ]);
+
+                $remainingRewardCents -= $appliedCents;
+                $compensatedCents += $appliedCents;
+            }
+
+            $creditedCents = $remainingRewardCents;
+
+            if ($compensatedCents > $pendingBeforeCents) {
+                throw new \LogicException(
+                    'Las compensaciones superan la reversión pendiente.'
+                );
+            }
+
+            $afterCents = $beforeCents + $creditedCents;
+
+            $pendingAfterCents =
+                $pendingBeforeCents - $compensatedCents;
+
+            // Actualizar el monedero.
             $wallet->update([
                 'balance' => $this->toMoney($afterCents),
+                'pending_reversal' => $this->toMoney(
+                    $pendingAfterCents
+                ),
+            ]);
+
+            // Actualizar el desglose definitivo de la recompensa.
+            $transaction->update([
+                'credited_amount' => $this->toMoney(
+                    $creditedCents
+                ),
+                'compensated_amount' => $this->toMoney(
+                    $compensatedCents
+                ),
+                'balance_after' => $this->toMoney($afterCents),
+                'description' => sprintf(
+                    'Recompensa del 2%% por compra %s. '
+                    . 'Acreditado: Q%s. Compensado: Q%s.',
+                    $order->order_number,
+                    $this->toMoney($creditedCents),
+                    $this->toMoney($compensatedCents)
+                ),
             ]);
 
             return $transaction;
+
         }, 3);
     }
+
 
     private function toCents(string|int|float $amount): int
     {
@@ -312,5 +409,195 @@ class WalletService
 
         return $transaction;
     }
+
+    /**
+     * Revierte la recompensa de una compra cancelada.
+     *
+     * Si el saldo es insuficiente, registra la diferencia
+     * como reversión pendiente.
+     *
+     * Debe ejecutarse dentro de una transacción de BD,
+     * con el pedido bloqueado previamente.
+     */
+
+    public function reversePurchaseReward(Order $order): ?WalletTransaction
+    {
+        if (DB::transactionLevel() === 0) {
+            throw new \LogicException(
+                'La reversión debe ejecutarse dentro de una transacción.'
+            );
+        }
+
+        if ($order->status !== Order::STATUS_CANCELLED) {
+            throw new \LogicException(
+                'El pedido debe estar cancelado.'
+            );
+        }
+
+        $reference = 'purchase_reversal:' . $order->id;
+
+        // Localizar la recompensa original.
+        $reward = WalletTransaction::query()
+            ->where('reference', 'purchase_reward:' . $order->id)
+            ->where('type', WalletTransaction::TYPE_CREDIT)
+            ->first();
+
+        if (!$reward) {
+            return null;
+        }
+
+        // Serializar las operaciones del monedero.
+        $wallet = Wallet::query()
+            ->whereKey($reward->wallet_id)
+            ->lockForUpdate()
+            ->firstOrFail();
+
+        // Evitar reversiones duplicadas.
+        $existing = WalletTransaction::query()
+            ->where('reference', $reference)
+            ->first();
+
+        if ($existing) {
+            return $existing;
+        }
+
+        $rewardCents = $this->toCents($reward->amount);
+
+        // Compatibilidad con recompensas antiguas
+        // que se acreditaron íntegramente.
+        $compensatedCents = $this->toCents(
+            $reward->compensated_amount ?? '0.00'
+        );
+
+        $creditedCents = $this->toCents(
+            $reward->credited_amount
+            ?? $this->toMoney($rewardCents - $compensatedCents)
+        );
+
+        if (
+            $creditedCents < 0 ||
+            $compensatedCents < 0 ||
+            $creditedCents + $compensatedCents !== $rewardCents
+        ) {
+            throw new \LogicException(
+                'El desglose de la recompensa es inconsistente.'
+            );
+        }
+
+        $applications = WalletReversalApplication::query()
+            ->where('wallet_transaction_id', $reward->id)
+            ->whereNull('reversed_at')
+            ->orderBy('id')
+            ->lockForUpdate()
+            ->get();
+
+        $applicationsCents = 0;
+
+        foreach ($applications as $application) {
+            $applicationsCents += $this->toCents(
+                $application->amount
+            );
+        }
+
+        // No revertir una recompensa compensada si no
+        // existe la trazabilidad de sus aplicaciones.
+        if ($applicationsCents !== $compensatedCents) {
+            throw new \LogicException(
+                'Las aplicaciones no coinciden con '
+                . 'el importe compensado.'
+            );
+        }
+
+        $beforeCents = $this->toCents($wallet->balance);
+
+        $pendingBeforeCents = $this->toCents(
+            $wallet->pending_reversal ?? '0.00'
+        );
+
+        // Revertir únicamente lo acreditado al saldo.
+        $deductedCents = min($beforeCents, $creditedCents);
+
+        $newPendingCents = $creditedCents - $deductedCents;
+
+        $afterCents = $beforeCents - $deductedCents;
+
+        // Reabrir las deudas compensadas por esta recompensa.
+        $reopenedCents = 0;
+
+        foreach ($applications as $application) {
+            $reversal = WalletReversal::query()
+                ->whereKey($application->wallet_reversal_id)
+                ->lockForUpdate()
+                ->firstOrFail();
+
+            if ($reversal->wallet_id !== $wallet->id) {
+                throw new \LogicException(
+                    'La aplicación pertenece a otro monedero.'
+                );
+            }
+
+            $appliedCents = $this->toCents(
+                $application->amount
+            );
+
+            $currentPendingCents = $this->toCents(
+                $reversal->pending_amount
+            );
+
+            $reversal->update([
+                'pending_amount' => $this->toMoney(
+                    $currentPendingCents + $appliedCents
+                ),
+            ]);
+
+            $application->update([
+                'reversed_at' => now(),
+            ]);
+
+            $reopenedCents += $appliedCents;
+        }
+
+        // Crear la obligación correspondiente al pedido
+        // cuya recompensa estamos cancelando.
+        WalletReversal::create([
+            'wallet_id' => $wallet->id,
+            'order_id' => $order->id,
+            'original_amount' => $this->toMoney($rewardCents),
+            'pending_amount' => $this->toMoney($newPendingCents),
+        ]);
+
+        $pendingAfterCents =
+            $pendingBeforeCents
+            + $reopenedCents
+            + $newPendingCents;
+
+        $wallet->update([
+            'balance' => $this->toMoney($afterCents),
+            'pending_reversal' => $this->toMoney(
+                $pendingAfterCents
+            ),
+        ]);
+
+        return WalletTransaction::create([
+            'wallet_id' => $wallet->id,
+            'order_id' => $order->id,
+            'type' => WalletTransaction::TYPE_REVERSAL,
+            'amount' => $this->toMoney($rewardCents),
+            'balance_before' => $this->toMoney($beforeCents),
+            'balance_after' => $this->toMoney($afterCents),
+            'reference' => $reference,
+            'description' => sprintf(
+                'Reversión de recompensa del pedido %s. '
+                . 'Descontado: Q%s. '
+                . 'Deuda reabierta: Q%s. '
+                . 'Nueva deuda: Q%s.',
+                $order->order_number,
+                $this->toMoney($deductedCents),
+                $this->toMoney($reopenedCents),
+                $this->toMoney($newPendingCents)
+            ),
+        ]);
+    }
+
 
 }
