@@ -564,6 +564,18 @@
                             </span>
                         </div>
 
+                                   <div
+                            class="d-flex justify-content-between mb-3"
+                        >
+                            <span class="text-muted">
+                                Descuento Mr. Bulls
+                            </span>
+
+                            <span>
+                                -Q{{ number_format($order->wallet_discount, 2) }}
+                            </span>
+                        </div>
+
 
                         <div
                             class="d-flex justify-content-between mb-3"
