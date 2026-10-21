@@ -12,8 +12,9 @@
         <section class="py-5 bg-white">
             <div class="container">
 
-                <div class="d-flex justify-content-between
-                                                                            align-items-end mb-4">
+                <div
+                    class="d-flex justify-content-between
+                                                                                                            align-items-end mb-4">
 
                     <div>
                         <span class="text-primary fw-semibold">
@@ -123,8 +124,8 @@
 
                                         <span
                                             class="badge bg-danger
-                                                                                                                                                     position-absolute
-                                                                                                                                                     top-0 start-0 m-3">
+                                                                                                                                                                                                                     position-absolute
+                                                                                                                                                                                                                     top-0 start-0 m-3">
                                             Oferta
                                         </span>
 
@@ -151,7 +152,7 @@
 
                                     <div class="d-flex align-items-center gap-2">
 
-                                        <x-shop.promotion-offer :product="$product" /><span class="fw-bold fs-5">
+                                        <span class="fw-bold fs-5">
                                             Q{{ number_format($product->price, 2) }}
                                         </span>
 
@@ -162,7 +163,7 @@
 
                                             <span
                                                 class="text-muted
-                                                                                                                                                         text-decoration-line-through">
+                                                                                                                                                                                                                         text-decoration-line-through">
                                                 Q{{ number_format($product->compare_price, 2) }}
                                             </span>
 
@@ -185,6 +186,7 @@
 
                                     @endif
 
+                                    <x-shop.promotion-offer :product="$product" />
                                 </div>
 
                             </div>

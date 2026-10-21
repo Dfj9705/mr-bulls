@@ -6,7 +6,7 @@
     );
 @endphp
 @foreach($offers as $offer)
-    <small class="d-block text-success mt-1">
+    <small class="d-block text-success fw-bold mt-1">
         {{ $offer->bundle_quantity }} por Q{{ number_format($offer->bundle_price, 2) }}.
     </small>
 @endforeach
