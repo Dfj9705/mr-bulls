@@ -232,7 +232,7 @@
                                                     <div class="d-flex flex-wrap
                                                                                             align-items-center gap-2">
 
-                                                        <x-shop.promotion-offer :product="$product" /><span class="fw-bold fs-5">
+                                                        <span class="fw-bold fs-5">
 
                                                             Q{{ number_format(
                                 $product->price,
@@ -286,7 +286,7 @@
                                                         @endif
 
                                                     </div>
-
+<x-shop.promotion-offer :product="$product" />
                                                 </div>
 
                                             </div>
