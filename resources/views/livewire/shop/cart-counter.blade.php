@@ -8,8 +8,9 @@
         aria-expanded="false"
     >
         <i class="bx bx-cart me-1"></i>
-
-        Carrito
+        <span class="d-none d-lg-block">
+            Carrito
+        </span>
 
         @if($count > 0)
 
