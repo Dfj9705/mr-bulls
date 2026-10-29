@@ -31,10 +31,13 @@ class RolesAndPermissionsSeeder extends Seeder
             'categorias.editar',
             'categorias.eliminar',
 
+
             // Pedidos
             'pedidos.ver',
+            'pedidos.crear',
             'pedidos.procesar',
             'pedidos.cancelar',
+
 
             // Pagos
             'pagos.ver',
