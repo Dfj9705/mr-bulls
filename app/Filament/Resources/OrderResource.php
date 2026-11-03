@@ -126,6 +126,10 @@ class OrderResource extends Resource
                             ->label('Descuento Monedero')
                             ->prefix('Q')
                             ->disabled(),
+                        Forms\Components\TextInput::make('manual_discount')
+                            ->label('Otros descuentos')
+                            ->prefix('Q')
+                            ->disabled(),
 
                         Forms\Components\TextInput::make('total')
                             ->label('Total')
