@@ -333,12 +333,98 @@ class CreateOrder extends CreateRecord
                                 return round((float) $product->price * $quantity, 2);
                             });
 
+
+                            $discountType = $get('discount_type');
+                            $discountValue = max(
+                                0,
+                                (float) ($get('discount_value') ?? 0)
+                            );
+
+                            if (
+                                auth()->user()?->can('pedidos.aplicar-descuento')
+                                && $discountType === 'percent'
+                            ) {
+                                $discount = round(
+                                    $total * min($discountValue, 100) / 100,
+                                    2
+                                );
+                            } elseif (
+                                auth()->user()?->can('pedidos.aplicar-descuento')
+                                && $discountType === 'fixed'
+                            ) {
+                                $discount = min($total, $discountValue);
+                            } else {
+                                $discount = 0;
+                            }
+
+                            $total = max(0, round($total - $discount, 2));
+
+
                             return 'Q ' . number_format($total, 2);
                         }),
 
 
                 ])
                 ->columns(2),
+
+
+            Forms\Components\Section::make('Descuento manual')
+                ->description('Aplica un descuento especial al pedido.')
+                ->visible(
+                    fn(): bool =>
+                        auth()->user()?->can('pedidos.aplicar-descuento') ?? false
+                )
+                ->schema([
+
+                    Forms\Components\Select::make('discount_type')
+                        ->label('Tipo de descuento')
+                        ->options([
+                            'fixed' => 'Monto fijo (Q)',
+                            'percent' => 'Porcentaje (%)',
+                        ])
+                        ->placeholder('Sin descuento')
+                        ->live()
+                        ->afterStateUpdated(
+                            fn(Forms\Set $set) =>
+                                $set('discount_value', null)
+                        ),
+
+                    Forms\Components\TextInput::make('discount_value')
+                        ->label('Valor del descuento')
+                        ->numeric()
+                        ->minValue(0)
+                        ->maxValue(
+                            fn(Forms\Get $get) =>
+                                $get('discount_type') === 'percent'
+                                ? 100
+                                : null
+                        )
+                        ->step(0.01)
+                        ->live()
+                        ->disabled(
+                            fn(Forms\Get $get) =>
+                                blank($get('discount_type'))
+                        )
+                        ->required(
+                            fn(Forms\Get $get) =>
+                                filled($get('discount_type'))
+                        ),
+
+                    Forms\Components\Textarea::make('discount_reason')
+                        ->label('Motivo del descuento')
+                        ->placeholder('Ej. Descuento especial autorizado')
+                        ->rows(2)
+                        ->maxLength(1000)
+                        ->required(
+                            fn(Forms\Get $get) =>
+                                filled($get('discount_type'))
+                                && (float) $get('discount_value') > 0
+                        )
+                        ->columnSpanFull(),
+
+                ])
+                ->columns(2),
+
 
             Forms\Components\Section::make('Observaciones')
                 ->schema([

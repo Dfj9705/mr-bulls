@@ -37,7 +37,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'pedidos.crear',
             'pedidos.procesar',
             'pedidos.cancelar',
-
+            'pedidos.aplicar-descuento',
 
             // Pagos
             'pagos.ver',

@@ -54,7 +54,51 @@ class AdminOrderCreationService
                 'integer',
                 'min:1',
             ],
+            'discount_type' => [
+                'nullable',
+                Rule::in(['fixed', 'percent']),
+            ],
+            'discount_value' => [
+                'nullable',
+                'numeric',
+                'min:0',
+                'decimal:0,2',
+            ],
+            'discount_reason' => [
+                'nullable',
+                'string',
+                'max:1000',
+            ],
         ])->validate();
+
+        $discountType = $validated['discount_type'] ?? null;
+        $discountValue = (float) ($validated['discount_value'] ?? 0);
+
+        $hasDiscount = filled($discountType) && $discountValue > 0;
+
+        if ($hasDiscount && !Auth::user()?->can('pedidos.aplicar-descuento')) {
+            throw ValidationException::withMessages([
+                'discount_value' => 'No tienes permiso para aplicar descuentos.',
+            ]);
+        }
+
+        if ($discountValue > 0 && !$discountType) {
+            throw ValidationException::withMessages([
+                'discount_type' => 'Selecciona el tipo de descuento.',
+            ]);
+        }
+
+        if ($discountType === 'percent' && $discountValue > 100) {
+            throw ValidationException::withMessages([
+                'discount_value' => 'El descuento no puede superar el 100%.',
+            ]);
+        }
+
+        if ($hasDiscount && blank($validated['discount_reason'] ?? null)) {
+            throw ValidationException::withMessages([
+                'discount_reason' => 'Debes indicar el motivo del descuento.',
+            ]);
+        }
 
         $department = $validated['shipping_department'];
         $municipality = $validated['shipping_municipality'];
@@ -148,6 +192,50 @@ class AdminOrderCreationService
                 ''
             );
 
+
+            $discountType = $validated['discount_type'] ?? null;
+            $discountValue = (float) ($validated['discount_value'] ?? 0);
+
+            $discountCents = 0;
+
+            if ($discountType === 'percent') {
+                $discountCents = (int) round(
+                    $subtotalCents * min($discountValue, 100) / 100,
+                    0,
+                    PHP_ROUND_HALF_UP
+                );
+            } elseif ($discountType === 'fixed') {
+                $discountCents = (int) round(
+                    $discountValue * 100,
+                    0,
+                    PHP_ROUND_HALF_UP
+                );
+            }
+
+            if ($discountCents > $subtotalCents) {
+                throw ValidationException::withMessages([
+                    'discount_value' =>
+                        'El descuento no puede superar el subtotal del pedido.',
+                ]);
+            }
+
+            $totalCents = $subtotalCents - $discountCents;
+
+            $manualDiscount = number_format(
+                $discountCents / 100,
+                2,
+                '.',
+                ''
+            );
+
+            $total = number_format(
+                $totalCents / 100,
+                2,
+                '.',
+                ''
+            );
+
+
             $order = Order::create([
                 'user_id' =>
                     $validated['customer_type'] === 'registered'
@@ -172,7 +260,25 @@ class AdminOrderCreationService
                 'shipping_cost' => '0.00',
                 'wallet_discount' => '0.00',
                 'promotion_discount' => '0.00',
-                'total' => $subtotal,
+                'total' => $total,
+
+                'manual_discount' => $manualDiscount,
+
+                'discount_type' => $discountCents > 0
+                    ? $discountType
+                    : null,
+
+                'discount_value' => $discountCents > 0
+                    ? $discountValue
+                    : null,
+
+                'discount_reason' => $discountCents > 0
+                    ? $validated['discount_reason']
+                    : null,
+
+                'discount_applied_by' => $discountCents > 0
+                    ? Auth::id()
+                    : null,
 
                 'status' => Order::STATUS_PENDING,
                 'payment_status' => Order::PAYMENT_PENDING,

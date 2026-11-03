@@ -22,6 +22,7 @@ class Order extends Model
     public const PAYMENT_FAILED = 'failed';
     public const PAYMENT_CANCELLED = 'cancelled';
 
+
     protected $fillable = [
         'user_id',
         'order_number',
@@ -56,6 +57,12 @@ class Order extends Model
         'stock_restored_at',
         'wallet_discount',
         'promotion_discount',
+
+        'manual_discount',
+        'discount_type',
+        'discount_value',
+        'discount_reason',
+        'discount_applied_by',
     ];
 
     protected function casts(): array
@@ -68,11 +75,14 @@ class Order extends Model
             'paid_at' => 'datetime',
             'wallet_discount' => 'decimal:2',
             'promotion_discount' => 'decimal:2',
+            'manual_discount' => 'decimal:2',
+            'discount_value' => 'decimal:2',
         ];
     }
 
     protected $attributes = [
         'wallet_discount' => '0.00',
+        'manual_discount' => '0.00',
     ];
 
     public function user(): BelongsTo
