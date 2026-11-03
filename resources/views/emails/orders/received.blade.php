@@ -270,6 +270,21 @@
                             </tr>
                             <tr>
                                 <td style="padding:5px 0;">
+                                    Otros descuentos
+                                </td>
+
+                                <td
+                                    align="right"
+                                    style="padding:5px 0;"
+                                >
+                                    - Q{{ number_format(
+                                        $order->manual_discount ,
+                                        2
+                                    ) }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding:5px 0;">
                                     Envío
                                 </td>
 
