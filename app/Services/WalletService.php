@@ -81,11 +81,22 @@ class WalletService
 
             // Solo los productos, después de aplicar el monedero.
 // No se incluyen gastos de envío.
-            $rewardBaseCents = max(
-                0,
-                $subtotalCents - $walletDiscountCents
+            $manualDiscountCents = $this->toCents(
+                $order->manual_discount ?? '0.00'
             );
 
+            $promotionDiscountCents = $this->toCents(
+                $order->promotion_discount ?? '0.00'
+            );
+
+            // Base elegible después de descuentos.
+// No incluye gastos de envío.
+            $rewardBaseCents = max(
+                0,
+                $subtotalCents
+                - $walletDiscountCents
+                - $manualDiscountCents
+            );
             // Recompensa del 2%, redondeada a centavos.
             $rewardCents = (int) round(
                 $rewardBaseCents * 0.02,

@@ -327,14 +327,14 @@ class OrderResource extends Resource
         return [
             'index' => Pages\ListOrders::route('/'),
             'edit' => Pages\EditOrder::route('/{record}/edit'),
+            'create' => Pages\CreateOrder::route('/create'),
         ];
     }
 
     public static function canCreate(): bool
     {
-        return false;
+        return auth()->user()?->can('pedidos.crear') ?? false;
     }
-
     public static function canViewAny(): bool
     {
         return auth()->user()?->can('pedidos.ver') ?? false;
